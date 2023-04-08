@@ -134,4 +134,32 @@ extension FloatingPoint {
 }
 
 
-
+extension UIButton {
+    
+    func addSinkAnimation() {
+        self.layer.shadowColor = CGColor.init(red: 0,
+                                              green: 0,
+                                              blue: 0,
+                                              alpha: 1)
+        self.layer.shadowOffset = CGSize(width: 0, height: 5)
+        self.layer.shadowOpacity = 0.8
+        
+        self.addTarget(self, action: #selector(self.sinkAction(_:)), for: .touchDown)
+        self.addTarget(self, action: #selector(self.sinkReset(_:)), for: .touchUpInside)
+        self.addTarget(self, action: #selector(self.sinkReset(_:)), for: .touchUpOutside)
+    }
+    
+    @objc func sinkAction(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.3, animations: {
+            sender.transform = CGAffineTransform(scaleX: 0.96, y: 0.95)
+            sender.layer.shadowOpacity = 0
+        }, completion: nil)
+    }
+    
+    @objc func sinkReset(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.3, animations: {
+            sender.transform = CGAffineTransform.identity
+            sender.layer.shadowOpacity = 0.8
+        }, completion: nil)
+    }
+}
