@@ -97,6 +97,17 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         return button
     }()
     
+    private let deleteAllDataButton: UIButton = {
+        let button = UIButton()
+        button.frame = CGRect(x: 0, y: 0, width: 150, height: 30)
+        button.layer.cornerRadius = 10
+        button.backgroundColor = .white
+        button.setTitleColor(.black, for: .normal)
+        button.setTitle("Delete Data", for: .normal)
+        button.addTarget(self, action: #selector(ViewController.clearTempFolder), for: .touchUpInside)
+        return button
+    }()
+    
     //viewdidload happen before viewdidappear
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -148,6 +159,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         let serialQueue = DispatchQueue(label: "serialQueue")
         self.view.addSubview(recordingButton)
 //        self.view.addSubview(projectButton)
+        self.view.addSubview(deleteAllDataButton)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -162,9 +174,15 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         recordingButton.frame = CGRect(x: UIScreen.main.bounds.size.width/2-40,
                                        y: UIScreen.main.bounds.size.height*3/4,
                                        width: 80, height: 80)
-        projectButton.frame = CGRect(x: UIScreen.main.bounds.size.width*3/4 - 50,
-                                     y: UIScreen.main.bounds.size.height*3/4 + 50,
-                                     width: 100, height: 50)
+        recordingButton.addSinkAnimation()
+//        projectButton.frame = CGRect(x: UIScreen.main.bounds.size.width*3/4 - 50,
+//                                     y: UIScreen.main.bounds.size.height*3/4 + 50,
+//                                     width: 100, height: 50)
+        deleteAllDataButton.frame = CGRect(x: 30,
+                                           y: 40,
+                                           width: 150,
+                                           height: 40)
+        deleteAllDataButton.addSinkAnimation()
     }
     
     
@@ -704,6 +722,22 @@ extension ViewController {
         let hostingController = UIHostingController(rootView: swiftUIView)
         DispatchQueue.main.async {
             self.present(hostingController, animated: true, completion: nil)
+        }
+    }
+    
+    @objc func clearTempFolder() {
+        let queue = DispatchQueue(label: "delete")
+        queue.async {
+            let fileManager = FileManager.default
+            let tempFolderPath = NSTemporaryDirectory()
+            do {
+                let filePaths = try fileManager.contentsOfDirectory(atPath: tempFolderPath)
+                for filePath in filePaths {
+                    try fileManager.removeItem(atPath: tempFolderPath + filePath)
+                }
+            } catch {
+                print("Could not clear temp folder: \(error)")
+            }
         }
     }
     
