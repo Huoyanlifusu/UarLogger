@@ -45,35 +45,53 @@ phoneA_wall_z = -0.967
 phoneB_wall_z = -0.335
 z_groundTruth = phoneA_wall_z - phoneB_wall_z
 
+x_ar_diff = []
+for num in x_ar:
+    x_ar_diff.append(num-x_groundTruth)
+
+x_ni_diff = []
+for num in x_ni:
+    x_ni_diff.append(num-x_groundTruth)
+
 fig = plt.figure()
 if len(x_ar) == len(x_ni):
     x = range(len(x_ar))
-    x_gt = [x_groundTruth]*len(x)
-    plt.plot(x, x_ar, color = 'r', label = 'arkit diff')
-    plt.plot(x, x_ni, color = 'b', label = 'ni diff')
-    plt.plot(x, x_gt, color = 'g', label = 'ground truth')
+    plt.plot(x, x_ar_diff, color = 'r', label = 'arkit diff')
+    plt.plot(x, x_ni_diff, color = 'b', label = 'ni diff')
 plt.xlabel("frame")
 plt.ylabel("x diff")
 plt.legend()
 plt.show()
 
+y_ar_diff = []
+for num in y_ar:
+    y_ar_diff.append(num-y_groundTruth)
+
+y_ni_diff = []
+for num in y_ni:
+    y_ni_diff.append(num-y_groundTruth)
+
 if len(y_ar) == len(y_ni):
     y = range(len(y_ar))
-    y_gt = [y_groundTruth]*len(y)
-    plt.plot(y, y_ar, color = 'r', label = 'arkit diff')
-    plt.plot(y, y_ni, color = 'b', label = 'ni diff')
-    plt.plot(y, y_gt, color = 'g', label = 'ground truth')
+    plt.plot(y, y_ar_diff, color = 'r', label = 'arkit diff')
+    plt.plot(y, y_ni_diff, color = 'b', label = 'ni diff')
 plt.xlabel("frame")
 plt.ylabel("y diff")
 plt.legend()
 plt.show()
 
+z_ar_diff = []
+for num in z_ar:
+    z_ar_diff.append(num-z_groundTruth)
+
+z_ni_diff = []
+for num in z_ni:
+    z_ni_diff.append(num-z_groundTruth)
+
 if len(z_ar) == len(z_ni):
     z = range(len(z_ar))
-    z_gt = [z_groundTruth]*len(z)
-    plt.plot(z, z_ar, color = 'r', label = 'arkit diff')
-    plt.plot(z, z_ni, color = 'b', label = 'ni diff')
-    plt.plot(z, z_gt, color = 'g', label = 'ground truth')
+    plt.plot(z, z_ar_diff, color = 'r', label = 'arkit diff')
+    plt.plot(z, z_ni_diff, color = 'b', label = 'ni diff')
 plt.xlabel("frame")
 plt.ylabel("z diff")
 plt.legend()
