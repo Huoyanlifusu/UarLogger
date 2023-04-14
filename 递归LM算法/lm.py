@@ -54,11 +54,11 @@ k = 0
 # 常数参数初始化
 rho = 0.0001 # 论文里未提及
 zeta = 0.0001
-epsilon = 0.001
-Len = 50 # 单次更新次数
-m = 25 # 滑动窗口的大小
+epsilon = 0.0001
+Len = 100 # 单次更新次数
+m = 20 # 滑动窗口的大小
 v = 2 # Lambda变化的速率
-time_constant = 500 # 时间常数
+time_constant = 50 # 时间常数
 learning_rate_init = np.diag([1,1,1])
 # 过程量
 N_m = [] # N_m数组的定义及初始化
