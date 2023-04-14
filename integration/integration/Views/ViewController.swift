@@ -52,8 +52,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     //some mathematical data
     var camera: ARCamera?
     
-    var peerTrans: simd_float4x4?
-    var peerTransFromARKit: simd_float4x4?
+    var peerWorldTransFromARKit: simd_float4x4?
     
     var anchorFromPeer: ARAnchor?
     
@@ -340,7 +339,6 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
                 guard let nearbyObjectUpdate = nearbyOject else {
                     return
                 }
-                self.peerTrans = session.worldTransform(for: nearbyObjectUpdate)
                 self.visualisationUpdate(with: nearbyObjectUpdate)
             }
         }
@@ -386,13 +384,13 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     //monitoring 30fps update
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         camera = frame.camera
-        StoredData.camTrans = camera?.transform
         if isRecording {
             guard let arkitData = StoredData.peerPosInARKit,
-                  let niData = StoredData.peerPosInNI else { return }
+                  let niData = StoredData.peerPosInNI,
+                  let distance = StoredData.distance else { return }
             collectorQUeue.async { [self] in
                 print("采集第\(frameNum)数据")
-                self.dataCollector.collectData(arkitData, niData, frame, frameNum)
+                self.dataCollector.collectData(arkitData, niData, frame, distance, frameNum)
                 frameNum += 1
             }
         }
@@ -403,11 +401,12 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         for anchor in anchors {
             if let participantAnchor = anchor as? ARParticipantAnchor {
                 //messageLabel.displayMessage("Established joint experience with a peer.")
-                peerTransFromARKit = participantAnchor.transform
-                StoredData.peerPosInARKit = participantAnchor.transform.columns.3
-                DispatchQueue.main.async {
-                    print("ar data is ready")
+                peerWorldTransFromARKit = participantAnchor.transform
+                guard let camT = camera?.transform else {
+                    return
                 }
+                let peerCamTransFromARKit = participantAnchor.transform * camT
+                StoredData.peerPosInARKit = peerCamTransFromARKit.columns.3
             }
         }
     }
@@ -417,11 +416,12 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         for anchor in anchors {
             if let participantAnchor = anchor as? ARParticipantAnchor {
                 //messageLabel.displayMessage("Established joint experience with a peer.")
-                peerTransFromARKit = participantAnchor.transform
-                StoredData.peerPosInARKit = participantAnchor.transform.columns.3
-                DispatchQueue.main.async {
-                    print("ar data is updated")
+                peerWorldTransFromARKit = participantAnchor.transform
+                guard let camT = camera?.transform else {
+                    return
                 }
+                let peerCamTransFromARKit = participantAnchor.transform * camT
+                StoredData.peerPosInARKit = peerCamTransFromARKit.columns.3
             }
         }
     }
@@ -437,7 +437,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
             peerDidShareDiscoveryToken(peer: peer, token: discoverytoken)
         }
         if let pos = try? JSONDecoder().decode(simd_float4.self, from: data) {
-            guard let camTrans = StoredData.camTrans else { print("no cam")
+            guard let camTrans = camera?.transform else { print("no cam")
                 return }
             if abs(pos.w - 100) < 1 {
                 // nothing
@@ -449,7 +449,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
                 //算法1 使用两次位姿旋转矩阵
                 //let Pos = coordinateAlignment(direction: direction, distance: distance, myCam: cam, peerEuler: peerEulerangle!, pos: pos)
                 //使用NI库自带的peer位姿矩阵 和 peercam坐标系坐标 求解世界坐标系坐标
-                guard let peerT = peerTransFromARKit else { couldDetect = true; return }
+                guard let peerT = peerWorldTransFromARKit else { couldDetect = true; return }
                 let peerTrans: simd_float4x4 = simd_float4x4(peerT.columns.0,
                                                          peerT.columns.1,
                                                          peerT.columns.2,
@@ -566,18 +566,14 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         if nearbyObject.distance == nil && nearbyObject.direction == nil {
             return .unknown
         }
-
         let isNearby = nearbyObject.distance.map(isNearby(_:)) ?? false
         let directionAvailable = nearbyObject.direction != nil
-
         if isNearby && directionAvailable {
             return .closeUpInFOV
         }
-
         if !isNearby && directionAvailable {
             return .notCloseUpInFOV
         }
-
         return .outOfFOV
     }
     
@@ -601,7 +597,8 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         guard let distance = peer.distance else { return }
         peerDistance = distance
         let camVec = alignDistanceWithNI(distance: distance, direction: direction)
-        StoredData.peerPosInNI = (StoredData.camTrans! * camVec).normalize()
+        StoredData.peerPosInNI = camVec.normalize()
+        StoredData.distance = distance
     }
     
     @IBAction func setWorldOrigin(_ sender: Any) {
