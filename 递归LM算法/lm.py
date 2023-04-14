@@ -4,6 +4,7 @@ import math
 import matplotlib.pyplot as plt
 # ARKit及NI数据预处理
 pk_arkit = []
+pk_ni = []
 pak = []
 dk = []
 count = 0
@@ -13,20 +14,18 @@ with open('ar_data2.csv', newline = '') as csvfile:
     for row in reader:
         if count > 0:
             pk_arkit.append(list(map(float, row[0].split('+'))))
+            pk_ni.append(list(map(float, row[1].split("+"))))
             pak.append(list(map(float, row[2].split("+"))))
             dk.append(float(row[3]))
         count += 1
 x_cam = []
-x = []
-for i in range(len(pak)):
+x_ni = []
+x1 = []
+for i in range(len(dk)):
     x_cam.append(pak[i][0])
-    x.append(i)
+    x_ni.append(pk_ni[i][0])
+    x1.append(i)
 fig = plt.figure()
-plt.plot(x, x_cam, color = 'r', label = 'x raw data')
-plt.xlabel("frame")
-plt.ylabel("m")
-plt.legend()
-plt.show()
 # x denotes down, y denotes left, z denotes front of the phone
 # conforms arkit camera coordinate in portrait mode
 # phoneA is iPhone 13
@@ -48,23 +47,25 @@ phoneB_wall_z = -0.312
 z_groundTruth = phoneA_wall_z - phoneB_wall_z
 
 # 状态变量定义及初始化
-betas = []
-beta = pak[0] # beta状态变量初始化
+betas = []#
+beta = np.array([[1.0],[1.0],[1.0]])  # beta状态变量初始化
 # 枚举变量
 k = 0
 # 常数参数初始化
-rho = 0.001 # 论文里未提及
-zeta = 0.001
+rho = 0.0001 # 论文里未提及
+zeta = 0.0001
 epsilon = 0.001
-Len = 1000 # 迭代次数
-m = 15 # 滑动窗口的大小
-v = 1.5 # Lambda变化的速率
-time_constant = 300
+Len = 50 # 单次更新次数
+m = 25 # 滑动窗口的大小
+v = 2 # Lambda变化的速率
+time_constant = 500 # 时间常数
 learning_rate_init = np.diag([1,1,1])
 # 过程量
 N_m = [] # N_m数组的定义及初始化
-diag = np.array([100,100,100])
+diag = np.array([0.5,0.5,0.5])
 Lambda = np.diag(diag)
+Err_last = 0.1
+Err_cur = 0.1
 
 def calculateSlidingWindowAvgPosition(N_m):
     res = 0
@@ -77,17 +78,22 @@ def calculateCurrentPosition(pk_cur):
 
 def calculate_ri(N_m, beta):
     R_i = []
-    y_fbeta = np.zeros((15,1))
+    y_fbeta = np.zeros((len(N_m),1))
     for index, item in enumerate(N_m):
-        ri = item[3] * item[3] - abs((beta[0]-item[0])*(beta[0]-item[0]) + (beta[1]-item[1])*(beta[1]-item[1]) + (beta[2]-item[2])*(beta[2]-item[2]))
+        ri = 0
+        for i in range(beta.shape[0]):
+            ri -= math.pow(item[3+i] - beta[i][0]*item[i], 2)
         R_i.append(ri)
-        y_fbeta[index, :] = [item[3] - math.sqrt((beta[0]-item[0])*(beta[0]-item[0]) + (beta[1]-item[1])*(beta[1]-item[1]) + (beta[2]-item[2])*(beta[2]-item[2]))]
+        y_fbeta[index, :] = [math.sqrt(abs(ri))]
     return [R_i, y_fbeta]
 
 def calculateJacobianMatrix(N_m, beta):
     Jacobian = np.zeros((len(N_m), len(beta)))
     for index, item in enumerate(N_m):
-        Jacobian[index, :] = [2*(beta[0]-item[0]), 2*(beta[1]-item[1]), 2*(beta[2]-item[2])]
+        item1 = 2*item[0]*(beta[0][0]-item[3])
+        item2 = 2*item[1]*(beta[1][0]-item[4])
+        item3 = 2*item[2]*(beta[2][0]-item[5])
+        Jacobian[index, :] = [-item1, -item2, -item3]
     return Jacobian
 
 def calculateDeltaBeta(Jacobian, beta, Lambda, y_fbeta):
@@ -97,40 +103,51 @@ def calculateDeltaBeta(Jacobian, beta, Lambda, y_fbeta):
     return delta_beta
 
 while k < m:
-    N_m.append([pk_arkit[k][0], pk_arkit[k][1], pk_arkit[k][2], dk[k]])
+    N_m.append([pk_arkit[k][0], pk_arkit[k][1], pk_arkit[k][2], pk_ni[k][0], pk_ni[k][1], pk_ni[k][2]])
     k += 1
-    beta = pak[k]
-Ri = calculate_ri(N_m, beta)
-Err_last = sum(num*num for num in Ri[0][:10])
-Err_cur = sum(num*num for num in Ri[0])
+
 for k in range(m, len(pk_arkit)):
-    d_cur = dk[k]
+    pk_ni_cur = pk_ni[k]
     pk_cur = pk_arkit[k]
     if abs(calculateCurrentPosition(pk_cur) - calculateSlidingWindowAvgPosition(N_m)) > rho:
         # update sliding window
         N_m.pop(0)
-        N_m.append([pk_cur[0], pk_cur[1], pk_cur[2], d_cur])
+        N_m.append([pk_cur[0], pk_cur[1], pk_cur[2], pk_ni_cur[0], pk_ni_cur[1], pk_ni_cur[2]])
         l = 1
         learning_rate = np.multiply(learning_rate_init, np.exp(-k/time_constant))
-        while l < Len and abs((Err_last - Err_cur)/Err_last) < zeta:
+        while l < Len:
+            if l > 2 and abs((Err_last - Err_cur)/Err_last) > zeta:
+                break
             Ri = calculate_ri(N_m, beta)
             Jacob = calculateJacobianMatrix(N_m, beta)
             delta_beta = calculateDeltaBeta(Jacob, beta, Lambda, Ri[1])
             i = 0
-            for i in range(len(beta)):
-                beta[i] += learning_rate[i][i] * delta_beta[i][0]
-                if abs(delta_beta[i][0]/beta[i]) < epsilon:
+            for i in range(beta.shape[0]):
+                print(i)
+                beta[i][0] += learning_rate[i][i] * delta_beta[i][0]
+                print(beta)
+                if abs(delta_beta[i][0]/beta[i][0]) < epsilon:
                     Lambda[i][i] /= v
+                    v *= 1.1
                 else:
                     Lambda[i][i] *= v
+                    v /= 1.1
             Err_last = Err_cur
-            Err_cur = sum(num * num for num in Ri[0])
+            Err_cur = sum(1/2 * num * num for num in Ri[0])
             l += 1
-        
-    betas.append(beta)
-x, y, z = zip(*betas)
-x2 = [i for i in range(len(pak))]
-plt.plot(x2[m:], x, color = 'r', label = 'cam pos after LM')
+    betas.append([beta[0][0], beta[1][0], beta[2][0]])
+sx, sy, sz = zip(*betas)
+newx, newy, newz = [], [], []
+for i in range(m, len(pk_ni)):
+    newx.append(pk_arkit[i][0]*sx[i-m])
+    newy.append(pk_arkit[i][0]*sy[i-m])
+    newz.append(pk_arkit[i][2]*sy[i-m])
+x2 = [i+m for i in range(len(betas))]
+xg =[x_groundTruth] * len(x1)
+plt.plot(x1, x_cam, color = 'r', label = 'arkit x diff raw data')
+plt.plot(x1, x_ni, color = 'g', label = 'ni x diff raw data')
+plt.plot(x1, xg, color = 'c', label = 'x diff ground truth')
+plt.plot(x2, newx, color = 'b', label = 'x diff after LM')
 plt.xlabel("frame")
 plt.ylabel("m")
 plt.legend()
