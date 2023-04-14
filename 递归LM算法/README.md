@@ -15,6 +15,8 @@ Experiment Scene
 
 ![821681459595_ pic](https://user-images.githubusercontent.com/54940667/232040281-229ba17b-97cf-4cd8-8b2e-68ecff2d63b8.jpg)
 
-Current result
+Current reliable result
 
-![831681474392_ pic](https://user-images.githubusercontent.com/54940667/232040426-26309113-5aa8-4049-b517-f87d2ca0eeb8.jpg)
+Raw data:
+
+![861681476544_ pic](https://user-images.githubusercontent.com/54940667/232048080-609707b1-2ef5-4f76-a8be-bcf20d657021.jpg)
