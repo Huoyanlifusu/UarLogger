@@ -23,5 +23,4 @@ Raw data:
 
 改完参数 效果比之前的略好一些
 
-![891681499176_ pic](https://user-images.githubusercontent.com/54940667/232134462-dd32a24d-20de-4a31-993c-2878d5479d97.jpg)
-
+![901681499804_ pic](https://user-images.githubusercontent.com/54940667/232136265-3767ab5c-2a3e-42f5-a8f2-f4396b7f6d91.jpg)
