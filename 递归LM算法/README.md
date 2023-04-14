@@ -23,4 +23,5 @@ Raw data:
 
 让ar 逼近ni 有点不收敛
 
-![image](https://user-images.githubusercontent.com/54940667/232121600-67a56f4f-c651-4bdb-880e-262a73832b35.png)
+![881681495148_ pic](https://user-images.githubusercontent.com/54940667/232121821-2da012d2-2b73-41d9-895a-bdc313140664.jpg)
+
