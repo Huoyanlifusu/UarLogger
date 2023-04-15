@@ -53,6 +53,7 @@ z_groundTruth = phoneA_wall_z - phoneB_wall_z
 # 状态变量定义及初始化
 betas = []
 beta = np.array([[1.0],[1.0],[1.0]])  # beta状态变量初始化
+beta_init = np.array([[1.0],[1.0],[1.0]])
 # 枚举变量
 k = 0
 # 常数参数初始化
@@ -140,12 +141,18 @@ for k in range(m, len(pk_arkit)):
             l += 1
     betas.append([beta[0][0], beta[1][0], beta[2][0]])
 sx, sy, sz = zip(*betas)
-newx, newy, newz = [], [], []
+newx = []
+newy = []
+newz = []
+for i in range(m):
+    newx.append(pk_arkit[i][0]*beta_init[0][0])
+    newy.append(pk_arkit[1][1]*beta_init[1][0])
+    newz.append(pk_arkit[i][2]*beta_init[2][0])
 for i in range(m, len(pk_ni)):
     newx.append(pk_arkit[i][0]*sx[i-m])
     newy.append(pk_arkit[i][0]*sy[i-m])
     newz.append(pk_arkit[i][2]*sz[i-m])
-x2 = [i+m for i in range(len(betas))]
+x2 = [i for i in range(len(newx))]
 xg =[x_groundTruth] * len(x1)
 plt.plot(x1, x_cam, color = 'r', label = 'arkit x diff raw data')
 plt.plot(x1, x_ni, color = 'g', label = 'ni x diff raw data')
@@ -156,7 +163,7 @@ plt.ylabel("m")
 plt.legend()
 plt.show()
 
-y2 = [i+m for i in range(len(betas))]
+y2 = [i for i in range(len(newy))]
 yg =[y_groundTruth] * len(x1)
 plt.plot(x1, y_cam, color = 'r', label = 'arkit y diff raw data')
 plt.plot(x1, y_ni, color = 'g', label = 'ni y diff raw data')
@@ -167,7 +174,7 @@ plt.ylabel("m")
 plt.legend()
 plt.show()
 
-z2 = [i+m for i in range(len(betas))]
+z2 = [i for i in range(len(newz))]
 zg =[z_groundTruth] * len(x1)
 plt.plot(x1, z_cam, color = 'r', label = 'arkit z diff raw data')
 plt.plot(x1, z_ni, color = 'g', label = 'ni z diff raw data')
