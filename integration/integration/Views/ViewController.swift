@@ -75,7 +75,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         button.backgroundColor = .white
         
         let circleLayer = CALayer()
-        circleLayer.backgroundColor = UIColor.red.cgColor
+        circleLayer.backgroundColor = UIColor.green.cgColor
         circleLayer.cornerRadius = 20
         circleLayer.frame = CGRect(x: 20, y: 20, width: 40, height: 40)
         
@@ -106,6 +106,8 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         button.addTarget(self, action: #selector(ViewController.clearTempFolder), for: .touchUpInside)
         return button
     }()
+    
+    private var circleLayer: CALayer?
     
     //viewdidload happen before viewdidappear
     override func viewDidLoad() {
@@ -159,6 +161,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         self.view.addSubview(recordingButton)
 //        self.view.addSubview(projectButton)
         self.view.addSubview(deleteAllDataButton)
+        circleLayer = recordingButton.layer.sublayers?.first(where: { $0 is CALayer }) as? CALayer
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -708,9 +711,11 @@ extension ViewController {
             if RecordConfig.fileURL == nil {
                 initFilePath()
             }
+            circleLayer?.backgroundColor = UIColor.red.cgColor
             print("开始采集")
         } else {
             print("结束采集")
+            circleLayer?.backgroundColor = UIColor.green.cgColor
         }
     }
     
