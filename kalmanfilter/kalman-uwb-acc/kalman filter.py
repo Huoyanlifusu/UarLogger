@@ -54,14 +54,14 @@ def setupy(k):
     ox = vio_points[k][0]
     oy = vio_points[k][1]
     oz = vio_points[k][2]
-    if k >= 20 and k < len(ni_points)-20:
-        for i in range(k-20, k+20):
-            ox += ni_points[i][0]
-            oy += ni_points[i][1]
-            oz += ni_points[i][2]
-        ox /= 41
-        oy /= 41
-        oz /= 41
+    # if k >= 20 and k < len(ni_points)-20:
+    #     for i in range(k-20, k+20):
+    #         ox += ni_points[i][0]
+    #         oy += ni_points[i][1]
+    #         oz += ni_points[i][2]
+    #     ox /= 41
+    #     oy /= 41
+    #     oz /= 41
     y = [cam_move[k][0]-cam_move[k-1][0], cam_move[k][1]-cam_move[k-1][1], cam_move[k][2]-cam_move[k-1][2], ox, oy, oz]
     return np.array(y).reshape(6, 1)
 
@@ -93,7 +93,7 @@ Pk = np.array([[10,0,0,0,0,0],
                [0,0,0,0,0,100]])
 # noise
 noise_w = np.random.normal(loc=0, scale=5, size=(6, 6))
-Q = np.cov(noise_w)
+Q = np.identity(6)
 noise_v = np.random.normal(loc=0, scale=0.5, size=(6, 6))
 R = np.cov(noise_v)
 # iteration counts
@@ -138,6 +138,10 @@ ni_diff_x = []
 ni_diff_y = []
 ni_diff_z = []
 
+vio_diff_x = []
+vio_diff_y = []
+vio_diff_z = []
+
 vx = []
 vy = []
 vz = []
@@ -146,6 +150,10 @@ for lst in ni_points:
     ni_diff_x.append(lst[0] - x_groundTruth)
     ni_diff_y.append(lst[1] - y_groundTruth)
     ni_diff_z.append(lst[2] - z_groundTruth)
+for lst in vio_points:
+    vio_diff_x.append(lst[0] - x_groundTruth)
+    vio_diff_y.append(lst[1] - y_groundTruth)
+    vio_diff_z.append(lst[2] - z_groundTruth)
 
 kalman_diff_x = []
 kalman_diff_y = []
@@ -161,6 +169,7 @@ for xk in betas:
 t1 = [timestamps[i] for i in range(frames)]
 plt.plot(t1, ni_diff_x, color = 'r', label = 'ni err with gt')
 plt.plot(t1, kalman_diff_x, color = 'b', label = 'kalman err with gt')
+plt.plot(t1, vio_diff_x, color = 'g', label = 'vio err with gt')
 # plt.plot(t1, vx, color = 'g', label = 'x velocity prediction')
 plt.xlabel('time interval')
 plt.ylabel('x axis')
@@ -169,6 +178,7 @@ plt.show()
 
 plt.plot(t1, ni_diff_y, color = 'r', label = 'ni err with gt')
 plt.plot(t1, kalman_diff_y, color = 'b', label = 'kalman err with gt')
+plt.plot(t1, vio_diff_y, color = 'g', label = 'vio err with gt')
 # plt.plot(t1, vy, color = 'g', label = 'y velocity prediction')
 plt.xlabel('time interval')
 plt.ylabel('y axis')
@@ -177,6 +187,7 @@ plt.show()
 
 plt.plot(t1, ni_diff_z, color = 'r', label = 'ni err with gt')
 plt.plot(t1, kalman_diff_z, color = 'b', label = 'kalman err with gt')
+plt.plot(t1, vio_diff_z, color = 'g', label = 'vio err with gt')
 # plt.plot(t1, vz, color = 'g', label = 'z velocity prediction')
 plt.xlabel('time interval')
 plt.ylabel('z axis')
