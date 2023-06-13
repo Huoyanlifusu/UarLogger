@@ -16,7 +16,6 @@ class CMManager: CMMotionManager {
     let magnetQueue = OperationQueue()
     
     var isRecoding = false
-    var bootTime: TimeInterval
     
     var logFile: URL? {
         guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return nil }
@@ -30,9 +29,8 @@ class CMManager: CMMotionManager {
     var logStringMotARH = NSMutableString(string: "")
     var logStringMotMAG = NSMutableString(string: "")
     
-    init(bootTime: TimeInterval, viewController: ViewController) {
+    init(viewController: ViewController) {
         self.viewController = viewController
-        self.bootTime = bootTime
         super.init()
         self.gyroUpdateInterval = 1.0/imuFreq
         self.accelerometerUpdateInterval = 1.0/imuFreq
@@ -41,7 +39,7 @@ class CMManager: CMMotionManager {
     
     func outputRotationData(_ data: CMGyroData?) {
         if (isRecoding && data != nil) {
-            let msDate = bootTime + data!.timestamp
+            let msDate = data!.timestamp
             logStringGyro.append(String(format: "%f,%f,%f,%f\r\n",
                                         msDate,
                                         data!.rotationRate.x,
@@ -52,18 +50,21 @@ class CMManager: CMMotionManager {
     
     func outputAccelerationData(_ data: CMAccelerometerData?) {
         if (isRecoding && data != nil) {
-            let msDate = bootTime + data!.timestamp
+            let msDate = data!.timestamp
             logStringAcce.append(String(format: "%f,%f,%f,%f\r\n",
                                         msDate,
                                         data!.acceleration.x,
                                         data!.acceleration.y,
                                         data!.acceleration.z))
+            StoredData.accX = data!.acceleration.x
+            StoredData.accY = data!.acceleration.y
+            StoredData.accZ = data!.acceleration.z
         }
     }
     
     func outputMagnetometerData(_ data: CMMagnetometerData?) {
         if (isRecoding && data != nil) {
-            let msDate = bootTime + data!.timestamp
+            let msDate = data!.timestamp
             logStringMagn.append(String(format: "%f,%f,%f,%f\r\n",
                                         msDate,
                                         data!.magneticField.x,
@@ -74,7 +75,7 @@ class CMManager: CMMotionManager {
     
     func outputDeviceMotionData(_ data: CMDeviceMotion?) {
         if (isRecoding && data != nil) {
-            let msDate = bootTime + data!.timestamp
+            let msDate = data!.timestamp
             let quat = data!.attitude.quaternion
             logStringMotion.append(String(format: "%f,%f,%f,%f,%f\r\n",
                                         msDate,

@@ -14,63 +14,68 @@ class DataCollector: NSObject {
                      _ posB: simd_float3,
                      _ frame: ARFrame,
                      _ distance: Float,
-                     _ frameNum: Int) {
+                     _ frameNum: Int,
+                     _ timeStamp: TimeInterval) {
+        let camPos = (frame.camera.transform.inverse * frame.camera.transform.columns.3).normalize()
         let data = PosData(peerPosAR: posA.normalize(),
                            peerPosNI: posB,
-                           myPos: frame.camera.transform.columns.3.normalize(),
-                           distance: distance)
+                           myPos: camPos,
+                           distance: distance,
+                           timeStamp: timeStamp)
         pos.append(data)
         writeTrackedSymptomValues(data.peerPosAR,
                                   data.peerPosNI,
                                   data.myPos,
                                   data.distance,
-                                  frameNum)
+                                  frameNum,
+                                  timeStamp)
     }
     
     func writeTrackedSymptomValues(_ peerPosAR: simd_float3,
                                    _ peerPosNI: simd_float3,
                                    _ myPos: simd_float3,
                                    _ distance: Float,
-                                   _ timestamp: Int) {
+                                   _ frameNum: Int,
+                                   _ timeStamp: TimeInterval) {
         let peerPosARStr = "\(peerPosAR.x)+\(peerPosAR.y)+\(peerPosAR.z)"
         let peerPosNIStr = "\(peerPosNI.x)+\(peerPosNI.y)+\(peerPosNI.z)"
         let myPosStr = "\(myPos.x)+\(myPos.y)+\(myPos.z)"
         let distanceStr = "\(distance)"
-        let timeStr = "\(timestamp)"
-        createCSV(peerPosARStr, peerPosNIStr, myPosStr, distanceStr, timeStr)
+        let frameStr = "\(frameNum)"
+        let timeStr = "\(timeStamp)"
+        createCSV(peerPosARStr, peerPosNIStr, myPosStr, distanceStr, frameStr, timeStr)
     }
     
     func createCSV(_ x: String,
                    _ y: String,
                    _ z: String,
                    _ d: String,
+                   _ f: String,
                    _ t: String) {
         guard let logFile = logFile else {
-            print("没找到本地文件")
+            Logger.shared.debugPrint("未找到本地文件")
             return
         }
 
-        guard let data = "\(x),\(y),\(z),\(d),\(t)\n".data(using: String.Encoding.utf8) else { return }
+        guard let data = "\(x),\(y),\(z),\(d),\(f),\(t)\n".data(using: String.Encoding.utf8) else { return }
 
         if FileManager.default.fileExists(atPath: logFile.path) {
             if let fileHandle = try? FileHandle(forWritingTo: logFile) {
                 fileHandle.seekToEndOfFile()
                 fileHandle.write(data)
                 fileHandle.closeFile()
-                print("001写入第\(t)帧数据")
+                Logger.shared.debugPrint("写入\(t)时刻位置姿态数据")
             }
         } else {
-            var csvText = "peerPosAR,peerPosNI,MyPos,Time\n"
-            let newLine = "\(x),\(y),\(z),\(d),\(t)\n"
+            var csvText = "peerPosAR,peerPosNI,MyPos,Distance,Frame,Time\n"
+            let newLine = "\(x),\(y),\(z),\(d),\(f),\(t)\n"
             csvText.append(newLine)
             do {
                 try csvText.write(to: logFile, atomically: true, encoding: String.Encoding.utf8)
             } catch {
-                print("Failed to create file")
+                Logger.shared.debugPrint("创建位姿文件失败")
                 print("\(error)")
             }
-            print("002写入第\(t)帧数据")
-         print(logFile ?? "not found")
         }
     }
 }
@@ -80,6 +85,7 @@ struct PosData {
     var peerPosNI: simd_float3
     var myPos: simd_float3
     var distance: Float
+    var timeStamp: TimeInterval
 }
 
 extension simd_float4 {

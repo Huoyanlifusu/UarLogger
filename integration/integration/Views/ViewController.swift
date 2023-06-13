@@ -46,9 +46,8 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     //some conditional variable
     var alreadyAdd = false
     var couldDetect = true
-    var couldCollectFeature: Bool = false
     private let featureQueue = DispatchQueue(label: "feature")
-    
+    private let collectorQUeue = DispatchQueue(label: "collector")
     //some mathematical data
     var camera: ARCamera?
     
@@ -63,9 +62,9 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     var peerDirection: simd_float3?
     var peerDistance: Float?
     
-    private let collectorQUeue = DispatchQueue(label: "collector")
     private var frameNum: Int = 0
     private let dataCollector = DataCollector()
+    private let envCollector = EnvDataCollector()
     private var isRecording = false
     
     private let recordingButton: UIButton = {
@@ -108,7 +107,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     }()
     
     private var circleLayer: CALayer?
-    
+    private var cmManager: CMManager!
     //viewdidload happen before viewdidappear
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -137,6 +136,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         configuration.isCollaborationEnabled = true
         configuration.environmentTexturing = .automatic
         configuration.planeDetection = .horizontal
+        configuration.isLightEstimationEnabled = true
         sceneView.session.run(configuration)
         print("AR Session Started!")
         
@@ -162,6 +162,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
 //        self.view.addSubview(projectButton)
         self.view.addSubview(deleteAllDataButton)
         circleLayer = recordingButton.layer.sublayers?.first(where: { $0 is CALayer }) as? CALayer
+        cmManager = CMManager(viewController: self)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -387,13 +388,15 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     //monitoring 30fps update
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         camera = frame.camera
+        self.envCollector.featureExtractor(frame, frame.timestamp)
         if isRecording {
             guard let arkitData = StoredData.peerPosInARKit,
                   let niData = StoredData.peerPosInNI,
                   let distance = StoredData.distance else { return }
             collectorQUeue.async { [self] in
                 print("采集第\(frameNum)数据")
-                self.dataCollector.collectData(arkitData, niData, frame, distance, frameNum)
+                self.dataCollector.collectData(arkitData, niData, frame, distance, frameNum, frame.timestamp)
+                self.envCollector.lightEstimation(frame, frame.timestamp)
                 frameNum += 1
             }
         }
@@ -423,7 +426,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
                 guard let camT = camera?.transform else {
                     return
                 }
-                let peerCamTransFromARKit = participantAnchor.transform * camT
+                let peerCamTransFromARKit = camT.inverse * participantAnchor.transform
                 StoredData.peerPosInARKit = peerCamTransFromARKit.columns.3
             }
         }
@@ -614,12 +617,6 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         self.mpc?.sendDataToAllPeers(data: data)
     }
     
-    func addCoordinateAnchor(using anchorName: String, with transform: simd_float4x4) {
-        let coordinate = ARAnchor(name: anchorName, transform: transform)
-        sceneView.session.add(anchor: coordinate)
-    }
-    
-    
     private func updateSessionInfoLabel(for frame: ARFrame, trackingState: ARCamera.TrackingState) {
         // Update the UI to provide feedback on the state of the AR experience.
         let message: String
@@ -653,10 +650,6 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         }
         
         infoLabel.text = message
-    }
-    
-    @IBAction func collectFeature(_ sender: Any) {
-        couldCollectFeature = true
     }
     
     //use button to reset tracking
@@ -708,14 +701,13 @@ extension ViewController {
     @objc func hitRecordingButton() {
         isRecording.toggle()
         if isRecording {
-            if RecordConfig.fileURL == nil {
-                initFilePath()
-            }
             circleLayer?.backgroundColor = UIColor.red.cgColor
             print("开始采集")
+            cmManager.startRecording()
         } else {
             print("结束采集")
             circleLayer?.backgroundColor = UIColor.green.cgColor
+            cmManager.endRecording()
         }
     }
     
@@ -730,24 +722,18 @@ extension ViewController {
     @objc func clearTempFolder() {
         let queue = DispatchQueue(label: "delete")
         queue.async {
-            let fileManager = FileManager.default
-            let tempFolderPath = NSTemporaryDirectory()
+            let fileMgr = FileManager.default
+            let currentPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
             do {
-                let filePaths = try fileManager.contentsOfDirectory(atPath: tempFolderPath)
-                for filePath in filePaths {
-                    try fileManager.removeItem(atPath: tempFolderPath + filePath)
+                let directoryContents = try fileMgr.contentsOfDirectory(atPath: currentPath)
+                for path in directoryContents {
+                    let combinedPath = currentPath + "/" + path
+                    try fileMgr.removeItem(atPath: combinedPath)
                 }
-            } catch {
-                print("Could not clear temp folder: \(error)")
+            } catch let error {
+                print("Error: \(error.localizedDescription)")
             }
         }
-    }
-    
-    func initFilePath() {
-        let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-        let fileName = "collect.csv"
-        let fileURL = documentsDirectory.appendingPathComponent(fileName)
-        RecordConfig.fileURL = fileURL
     }
 }
 
