@@ -119,6 +119,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         
         //make sure support arworldtracking
         guard ARWorldTrackingConfiguration.isSupported else {
+            Logger.shared.debugPrint("错误001: 该设备不支持AR感知世界功能")
             fatalError("do not support ar world tracking")
         }
         
@@ -137,8 +138,17 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         configuration.environmentTexturing = .automatic
         configuration.planeDetection = .horizontal
         configuration.isLightEstimationEnabled = true
+        
+        if ARWorldTrackingConfiguration.supportsFrameSemantics([.sceneDepth, .smoothedSceneDepth]) {
+            ScanConfig.supportLidar = true
+            Logger.shared.debugPrint("该设备携带Lidar传感器")
+        }
+        else {
+            Logger.shared.debugPrint("该设备未携带Lidar传感器")
+        }
+        
         sceneView.session.run(configuration)
-        print("AR Session Started!")
+        Logger.shared.debugPrint("开始AR会话")
         
         //show feature points in ar experience, usually not used
         //sceneView.debugOptions = ARSCNDebugOptions.showFeaturePoints
@@ -388,14 +398,15 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     //monitoring 30fps update
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         camera = frame.camera
-        self.envCollector.featureExtractor(frame, frame.timestamp)
+//        self.envCollector.featureExtractor(frame, frame.timestamp)
         if isRecording {
             guard let arkitData = StoredData.peerPosInARKit,
                   let niData = StoredData.peerPosInNI,
-                  let distance = StoredData.distance else { return }
+                  let distance = StoredData.distance,
+                  let poseDataAR = StoredData.peerPoseInARKit else { return }
             collectorQUeue.async { [self] in
                 print("采集第\(frameNum)数据")
-                self.dataCollector.collectData(arkitData, niData, frame, distance, frameNum, frame.timestamp)
+                self.dataCollector.collectData(arkitData, niData, poseDataAR, frame, distance, frameNum, frame.timestamp)
                 self.envCollector.lightEstimation(frame, frame.timestamp)
                 frameNum += 1
             }
@@ -413,6 +424,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
                 }
                 let peerCamTransFromARKit = participantAnchor.transform * camT
                 StoredData.peerPosInARKit = peerCamTransFromARKit.columns.3
+                StoredData.peerPoseInARKit = poseCalculateInARKit(peerCamTransFromARKit)
             }
         }
     }
