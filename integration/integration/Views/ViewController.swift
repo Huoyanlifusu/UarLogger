@@ -65,6 +65,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     private var frameNum: Int = 0
     private let dataCollector = DataCollector()
     private let envCollector = EnvDataCollector()
+    private let featureSensor = FeatureSensor(featurePointNum: 0)
     private var isRecording = false
     
     private let recordingButton: UIButton = {
@@ -112,11 +113,11 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     override func viewDidLoad() {
         super.viewDidLoad()
         startup()
+        ScanConfig.viewportsize = view.bounds.size
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
         //make sure support arworldtracking
         guard ARWorldTrackingConfiguration.isSupported else {
             Logger.shared.debugPrint("错误001: 该设备不支持AR感知世界功能")
@@ -218,6 +219,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         if mpc != nil && connectedPeer != nil {
             startupNI()
         }
+
     }
     
     func startupMPC() {
@@ -400,14 +402,15 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         camera = frame.camera
 //        self.envCollector.featureExtractor(frame, frame.timestamp)
         if isRecording {
+            self.featureSensor.featureExtractor(frame, frame.timestamp)
             guard let arkitData = StoredData.peerPosInARKit,
                   let niData = StoredData.peerPosInNI,
                   let distance = StoredData.distance,
                   let poseDataAR = StoredData.peerPoseInARKit else { return }
             collectorQUeue.async { [self] in
                 print("采集第\(frameNum)数据")
-                self.dataCollector.collectData(arkitData, niData, poseDataAR, frame, distance, frameNum, frame.timestamp)
-                self.envCollector.lightEstimation(frame, frame.timestamp)
+                dataCollector.collectData(arkitData, niData, poseDataAR, frame, distance, frameNum, frame.timestamp)
+                envCollector.lightEstimation(frame, frame.timestamp)
                 frameNum += 1
             }
         }

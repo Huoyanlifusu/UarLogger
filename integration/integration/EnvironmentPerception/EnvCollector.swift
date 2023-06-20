@@ -18,14 +18,6 @@ class EnvDataCollector {
         return documentsDirectory.appendingPathComponent(fileName)
     }
     
-    func featureExtractor(_ frame: ARFrame, _ timeStamp: TimeInterval) {
-        if frame.rawFeaturePoints?.points.count ?? 0 > 20 {
-            Logger.shared.debugPrint("特征丰富")
-        }
-        else {
-            Logger.shared.debugPrint("特征匮乏")
-        }
-    }
     
     func lightEstimation(_ frame: ARFrame, _ timeStamp: TimeInterval) {
         let lighting = frame.lightEstimate?.ambientIntensity ?? 0.0

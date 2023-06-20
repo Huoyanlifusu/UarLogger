@@ -19,6 +19,10 @@ func poseCalculateInARKit(_ trans: simd_float4x4) -> simd_float3 {
     return simd_float3(rollAngle, yawAngle, pitchAngle)
 }
 
-func poseCalculateInNI() {
-    
+func pythonTest() {
+//    let sys = Python.import("sys")
+//    let dirPath = "/Users/zhangyuyang/Desktop/MULTIUSERAR/python数据处理/poseEst/pose.py"
+//    sys.path.append(dirPath)
+//    let pose = Python.import("pose")
+//    let response = pose.hello()
 }
