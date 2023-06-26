@@ -49,7 +49,7 @@ class EnvDataCollector {
                 fileHandle.seekToEndOfFile()
                 fileHandle.write(data)
                 fileHandle.closeFile()
-                Logger.shared.debugPrint("写入\(t)时刻环境数据")
+//                Logger.shared.debugPrint("写入\(t)时刻环境数据")
             }
         } else {
             var csvText = "peerPosAR,peerPosNI,MyPos,Distance,Frame,Time\n"

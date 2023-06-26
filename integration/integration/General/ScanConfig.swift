@@ -6,9 +6,9 @@
 //
 
 import Foundation
+import UIKit
 
 struct ScanConfig {
     static var supportLidar: Bool = false
-    
     static var viewportsize: CGSize = CGSize(width: 390, height: 844)
 }

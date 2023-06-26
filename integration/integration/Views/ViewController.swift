@@ -18,16 +18,16 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     // scene
     @IBOutlet weak var sceneView: ARSCNView!
     
-    // some labels
+    // labels
     @IBOutlet weak var deviceLable: UILabel!
     @IBOutlet weak var infoLabel: UILabel!
     
-    //send map button
-//    @IBOutlet weak var sendMapButton: UIButton!
-
+    // button
+    @IBOutlet weak var flashlightButton: UIButton!
+    
     let coachingOverlayView = ARCoachingOverlayView()
     
-    //NISession variable
+    // Nearby Interaction
     var niSession: NISession?
     var peerDiscoveryToken: NIDiscoveryToken?
     var sharedTokenWithPeers = false
@@ -36,38 +36,38 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         case unknown, closeUpInFOV, notCloseUpInFOV, outOfFOV
     }
     
-    //MPCSession variable
+    // Multipeer Connectivity
     var mpc: MPCSession?
     var connectedPeer: MCPeerID?
     var peerDisplayName: String?
     var peerSessionIDs = [MCPeerID: String]()
     var sessionIDObservation: NSKeyValueObservation?
     
-    //some conditional variable
+    // Conditional variables
     var alreadyAdd = false
     var couldDetect = true
-    private let featureQueue = DispatchQueue(label: "feature")
-    private let collectorQUeue = DispatchQueue(label: "collector")
-    //some mathematical data
+    private var isRecording = false
+    
+    // ARKit & mathematical variables
     var camera: ARCamera?
-    
     var peerWorldTransFromARKit: simd_float4x4?
-    
     var anchorFromPeer: ARAnchor?
-    
     var eularAngle: simd_float3?
     var peerEulerangle: simd_float3?
-    
-    //var couldCreateObj: Bool = true
     var peerDirection: simd_float3?
     var peerDistance: Float?
     
+    // Data collection variables
+    private let featureQueue = DispatchQueue(label: "feature")
+    private let collectorQUeue = DispatchQueue(label: "collector")
+
     private var frameNum: Int = 0
     private let dataCollector = DataCollector()
     private let envCollector = EnvDataCollector()
     private let featureSensor = FeatureSensor(featurePointNum: 0)
-    private var isRecording = false
+    private var cmManager: CMManager!
     
+    // Custom UI components
     private let recordingButton: UIButton = {
         let button = UIButton()
         button.frame = CGRect(x: 0, y: 0, width: 80, height: 80)
@@ -83,7 +83,6 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         button.addTarget(self, action: #selector(ViewController.hitRecordingButton), for: .touchUpInside)
         return button
     }()
-    
     private let projectButton: UIButton = {
         let button = UIButton()
         button.frame = CGRect(x: 0, y: 0,
@@ -95,7 +94,6 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         button.addTarget(self, action: #selector(ViewController.pushProjectMenu), for: .touchUpInside)
         return button
     }()
-    
     private let deleteAllDataButton: UIButton = {
         let button = UIButton()
         button.frame = CGRect(x: 0, y: 0, width: 150, height: 30)
@@ -106,9 +104,25 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         button.addTarget(self, action: #selector(ViewController.clearTempFolder), for: .touchUpInside)
         return button
     }()
+    private let lightSensorSwitch: UISwitch = {
+        let sw = UISwitch()
+        sw.frame = CGRect(x: 0, y: 0, width: 80, height: 40)
+        sw.isOn = true
+        return sw
+    }()
+    private let lightSensorLabel: UILabel = {
+        let label = UILabel()
+        label.frame = CGRect(x: 0,
+                             y: 0,
+                             width: 80,
+                             height: 40)
+        label.textColor = .black
+        label.backgroundColor = .white
+        label.layer.cornerRadius = 10
+        return label
+    }()
     
     private var circleLayer: CALayer?
-    private var cmManager: CMManager!
     //viewdidload happen before viewdidappear
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -172,6 +186,10 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         self.view.addSubview(recordingButton)
 //        self.view.addSubview(projectButton)
         self.view.addSubview(deleteAllDataButton)
+        
+        self.view.addSubview(lightSensorSwitch)
+        self.view.addSubview(lightSensorLabel)
+        
         circleLayer = recordingButton.layer.sublayers?.first(where: { $0 is CALayer }) as? CALayer
         cmManager = CMManager(viewController: self)
     }
@@ -196,6 +214,14 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
                                            y: 40,
                                            width: 150,
                                            height: 40)
+        lightSensorSwitch.frame = CGRect(x: 30,
+                                         y: 100,
+                                         width: 80,
+                                         height: 40)
+        lightSensorLabel.frame = CGRect(x: 80,
+                                        y: 100,
+                                        width: 100,
+                                        height: 40)
         deleteAllDataButton.addSinkAnimation()
     }
     
@@ -399,6 +425,10 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     var count: Int = 0
     //monitoring 30fps update
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        if lightSensorSwitch.isOn {
+            envCollector.lightEstimation(frame, frame.timestamp)
+            lightSensorLabel.text = "\(envCollector.light.lightEstimate)"
+        }
         camera = frame.camera
 //        self.envCollector.featureExtractor(frame, frame.timestamp)
         if isRecording {
@@ -410,7 +440,6 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
             collectorQUeue.async { [self] in
                 print("采集第\(frameNum)数据")
                 dataCollector.collectData(arkitData, niData, poseDataAR, frame, distance, frameNum, frame.timestamp)
-                envCollector.lightEstimation(frame, frame.timestamp)
                 frameNum += 1
             }
         }
@@ -571,6 +600,29 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     }
     
     
+    @IBAction func flashlight(_ sender: Any) {
+        print("1")
+        guard let device = AVCaptureDevice.default(for: .video), device.hasTorch else {
+                let alertController = UIAlertController(title: "Flashlight is not supported", message: nil, preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: "Understand", style: .default, handler: nil))
+                present(alertController, animated: true)
+                return
+            }
+            
+            do {
+                try device.lockForConfiguration()
+                let torchOn = !device.isTorchActive
+                try device.setTorchModeOn(level: 1.0)
+                device.torchMode = torchOn ? .on : .off
+                device.unlockForConfiguration()
+            } catch {
+                let alertController = UIAlertController(title: "Flashlight is not supported", message: nil, preferredStyle: .alert)
+                alertController.addAction(UIAlertAction(title: "Understand", style: .default, handler: nil))
+                present(alertController, animated: true)
+            }
+    }
+    
+    
     @IBAction func shareSession(_ sender: Any) {
         sceneView.session.getCurrentWorldMap(completionHandler: {
             worldmap, error in
@@ -622,15 +674,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         StoredData.distance = distance
     }
     
-    @IBAction func setWorldOrigin(_ sender: Any) {
-        guard let cam = camera else { return }
-        let euler = simd_make_float4(cam.eulerAngles, 100)
-        guard let data = try? JSONEncoder().encode(euler) else {
-            print("cannot encode your eulerangle!")
-            return
-        }
-        self.mpc?.sendDataToAllPeers(data: data)
-    }
+
     
     private func updateSessionInfoLabel(for frame: ARFrame, trackingState: ARCamera.TrackingState) {
         // Update the UI to provide feedback on the state of the AR experience.

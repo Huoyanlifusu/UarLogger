@@ -45,7 +45,7 @@ class PointcloudData {
         let e31 = transform.columns.1.w
         let e32 = transform.columns.2.w
         let e33 = transform.columns.3.w
-        self.logStringTransform.append(String(format: "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f",
+        self.logStringTransform.append(String(format: "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\r\n",
                                               e00, e01, e02, e03,
                                               e10, e11, e12, e13,
                                               e20, e21, e22, e23,

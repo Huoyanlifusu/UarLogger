@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="22113.1" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22089"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -31,13 +32,22 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fYt-Sy-fzf">
-                                <rect key="frame" x="308" y="47" width="64" height="35"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fYt-Sy-fzf">
+                                <rect key="frame" x="279" y="100" width="64" height="35"/>
                                 <color key="backgroundColor" systemColor="labelColor"/>
                                 <color key="tintColor" systemColor="secondarySystemBackgroundColor"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Clear"/>
+                                <buttonConfiguration key="configuration" style="plain" title="Clear" cornerStyle="medium">
+                                    <backgroundConfiguration key="background">
+                                        <color key="backgroundColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <color key="strokeColor" systemColor="systemRedColor"/>
+                                    </backgroundConfiguration>
+                                </buttonConfiguration>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="5"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
                                 <connections>
                                     <action selector="removeAllAnchorsYouCreated:" destination="BYZ-38-t0r" eventType="touchUpInside" id="v2Y-YW-RaB"/>
                                 </connections>
@@ -49,12 +59,40 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="QID-0A-Rf1" userLabel="Flashlight Button">
+                                <rect key="frame" x="303" y="678" width="40" height="40"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="40" id="QKN-tg-p2O"/>
+                                    <constraint firstAttribute="width" constant="40" id="pUy-bx-m6X"/>
+                                </constraints>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="plain">
+                                    <backgroundConfiguration key="background" image="flashlight.png">
+                                        <color key="backgroundColor" systemColor="systemGray3Color"/>
+                                    </backgroundConfiguration>
+                                </buttonConfiguration>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                        <integer key="value" value="15"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                                <connections>
+                                    <action selector="flashlight:" destination="BYZ-38-t0r" eventType="touchUpInside" id="wnv-Y4-6iq"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="bottom" secondItem="QID-0A-Rf1" secondAttribute="bottom" constant="100" id="5VK-6C-I1e"/>
+                            <constraint firstItem="fYt-Sy-fzf" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" constant="100" id="Vd3-9R-wKB"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="fYt-Sy-fzf" secondAttribute="trailing" constant="50" id="cWx-1K-4i6"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="QID-0A-Rf1" secondAttribute="trailing" constant="50" id="zIJ-YF-HZo"/>
+                        </constraints>
                     </view>
                     <connections>
                         <outlet property="deviceLable" destination="H8c-tZ-dGe" id="CtF-Gp-yR3"/>
+                        <outlet property="flashlightButton" destination="QID-0A-Rf1" id="0jH-Qy-1J1"/>
                         <outlet property="infoLabel" destination="sdP-SE-v9g" id="DJi-TG-0ti"/>
                         <outlet property="sceneView" destination="cZb-bA-EjM" id="eUD-BU-5bp"/>
                     </connections>
@@ -70,14 +108,21 @@
         </scene>
     </scenes>
     <resources>
+        <image name="flashlight.png" width="200" height="200"/>
         <systemColor name="labelColor">
             <color red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="secondarySystemBackgroundColor">
-            <color red="0.94901960784313721" green="0.94901960784313721" blue="0.96862745098039216" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+            <color red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemGray3Color">
+            <color red="0.78039215689999997" green="0.78039215689999997" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemRedColor">
+            <color red="1" green="0.23137254900000001" blue="0.18823529410000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
