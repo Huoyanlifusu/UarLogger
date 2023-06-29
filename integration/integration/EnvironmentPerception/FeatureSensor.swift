@@ -12,21 +12,25 @@ class FeatureSensor {
     // 环境光强度
     var featurePointNum: Int
     private let pointcloudData = PointcloudData()
+    private var vc: ViewController?
     
-    init(featurePointNum: Int) {
+    init(featurePointNum: Int, viewController: ViewController) {
         self.featurePointNum = featurePointNum
+        self.vc = viewController
     }
     
-    func featureExtractor(_ frame: ARFrame, _ timeStamp: TimeInterval) {
+    func featureCounter(_ frame: ARFrame, _ timeStamp: TimeInterval) {
         featurePointNum = frame.rawFeaturePoints?.points.count ?? 0
-        if featurePointNum > 20 {
-            Logger.shared.debugPrint("特征丰富")
-        }
-        if featurePointNum > 10 {
-            extractPoints(frame.camera, frame.rawFeaturePoints!)
-        }
-        else {
-            Logger.shared.debugPrint("特征匮乏")
+        if featurePointNum >= 50 {
+            vc?.featureLabel.text = "Too much"
+        } else if featurePointNum >= 40 && featurePointNum < 50 {
+            vc?.featureLabel.text = "Much"
+        } else if featurePointNum >= 20 && featurePointNum < 40 {
+            vc?.featureLabel.text = "Normal"
+        } else if featurePointNum >= 10 && featurePointNum < 20 {
+            vc?.featureLabel.text = "Not enough"
+        } else {
+            vc?.featureLabel.text = "Few"
         }
     }
     

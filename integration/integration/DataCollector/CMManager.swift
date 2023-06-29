@@ -14,6 +14,7 @@ class CMManager: CMMotionManager {
     let accegyroQueue = OperationQueue()
     let motionQueue = OperationQueue()
     let magnetQueue = OperationQueue()
+    let UIQueue = DispatchQueue.main
     
     var isRecoding = false
     
@@ -39,6 +40,115 @@ class CMManager: CMMotionManager {
     
     private func initLogString() -> NSMutableString {
         return NSMutableString(string: "")
+    }
+    
+    func startGyroAcceUpdate() {
+        self.startGyroUpdates(to: accegyroQueue, withHandler: {
+            (data: CMGyroData?, error: Error?) in
+            if let error = error {
+                let alert = UIAlertController(title: "Error", message: "Gyroscope update: \(error)", preferredStyle: .alert)
+                let okButton = UIAlertAction(title: "OK", style: .default, handler: nil)
+                alert.addAction(okButton)
+                self.viewController.present(alert, animated: true, completion: nil)
+            }
+            if self.isRecoding {
+                self.outputRotationData(data)
+            }
+        })
+        
+        self.startAccelerometerUpdates(to: accegyroQueue, withHandler: {
+            (data: CMAccelerometerData?, error: Error?) in
+            if let error = error {
+                let alert = UIAlertController(title: "Error", message: "Accelerometer update: \(error)", preferredStyle: .alert)
+                let okButton = UIAlertAction(title: "OK", style: .default, handler: nil)
+                alert.addAction(okButton)
+                self.viewController.present(alert, animated: true, completion: nil)
+            }
+            if self.isRecoding {
+                self.outputAccelerationData(data)
+            }
+            self.judgeFromAcce(data: data)
+        })
+    }
+    
+    func startMotionUpdate() {
+        self.startDeviceMotionUpdates(using: .xTrueNorthZVertical, to: motionQueue, withHandler: {
+            (data: CMDeviceMotion?, error: Error?) in
+            if let error = error {
+                let alert = UIAlertController(title: "Error", message: "DeviceMotion update: \(error)", preferredStyle: .alert)
+                let okButton = UIAlertAction(title: "OK", style: .default, handler: nil)
+                alert.addAction(okButton)
+                self.viewController.present(alert, animated: true, completion: nil)
+            }
+            if self.isRecoding {
+                self.outputDeviceMotionData(data)
+            }
+            self.judgeFromMot(data: data)
+        })
+    }
+    
+    func startMagnetUpdate() {
+        self.startMagnetometerUpdates(to: magnetQueue, withHandler: {
+            (data: CMMagnetometerData?, error: Error?) in
+            if let error = error {
+                let alert = UIAlertController(title: "Error", message: "Magnetometer update: \(error)", preferredStyle: .alert)
+                let okButton = UIAlertAction(title: "OK", style: .default, handler: nil)
+                alert.addAction(okButton)
+                self.viewController.present(alert, animated: true, completion: nil)
+            }
+            if self.isRecoding {
+                self.outputMagnetometerData(data)
+            }
+        })
+    }
+    
+    func stopGyroAcceUpdate() {
+        self.stopGyroUpdates()
+        self.stopAccelerometerUpdates()
+    }
+    
+    func stopMotionUpdate() {
+        self.stopDeviceMotionUpdates()
+    }
+    
+    func stopMagnetUpdate() {
+        self.stopMagnetometerUpdates()
+    }
+    
+    func judgeFromAcce(data: CMAccelerometerData?) {
+        guard let data = data else {
+            return
+        }
+        if data.acceleration.x > 0.1 || data.acceleration.y > 0.1 || data.acceleration.z > 0.1 {
+            UIQueue.async { [self] in
+                viewController.motionLabel.text = "Unstable Motion"
+            }
+        } else {
+            UIQueue.async { [self] in
+                viewController.motionLabel.text = "Normally"
+            }
+        }
+    }
+    
+    func judgeFromGyro(data: CMGyroData?) {
+        guard let data = data else {
+            return
+        }
+        if data.rotationRate.x > 0.5 || data.rotationRate.y > 0.5 || data.rotationRate.z > 0.5 {
+            UIQueue.async { [self] in
+                viewController.motionLabel.text = "Unstable Motion"
+            }
+        } else {
+            UIQueue.async { [self] in
+                viewController.motionLabel.text = "Normally"
+            }
+        }
+    }
+    
+    func judgeFromMot(data: CMDeviceMotion?) {
+        guard let data = data else {
+            return
+        }
     }
     
     func outputRotationData(_ data: CMGyroData?) {
@@ -114,69 +224,6 @@ class CMManager: CMMotionManager {
         }
     }
     
-    func startGyroAcceUpdate() {
-        self.startGyroUpdates(to: accegyroQueue, withHandler: {
-            (data: CMGyroData?, error: Error?) in
-            self.outputRotationData(data)
-            if let error = error {
-                let alert = UIAlertController(title: "Error", message: "Gyroscope update: \(error)", preferredStyle: .alert)
-                let okButton = UIAlertAction(title: "OK", style: .default, handler: nil)
-                alert.addAction(okButton)
-                self.viewController.present(alert, animated: true, completion: nil)
-            }
-        })
-        
-        self.startAccelerometerUpdates(to: accegyroQueue, withHandler: {
-            (data: CMAccelerometerData?, error: Error?) in
-            self.outputAccelerationData(data)
-            if let error = error {
-                let alert = UIAlertController(title: "Error", message: "Accelerometer update: \(error)", preferredStyle: .alert)
-                let okButton = UIAlertAction(title: "OK", style: .default, handler: nil)
-                alert.addAction(okButton)
-                self.viewController.present(alert, animated: true, completion: nil)
-            }
-        })
-    }
-    
-    func stopGyroAcceUpdate() {
-        self.stopGyroUpdates()
-        self.stopAccelerometerUpdates()
-    }
-    
-    func startMotionUpdate() {
-        self.startDeviceMotionUpdates(using: .xTrueNorthZVertical, to: motionQueue, withHandler: {
-            (data: CMDeviceMotion?, error: Error?) in
-            self.outputDeviceMotionData(data)
-            if let error = error {
-                let alert = UIAlertController(title: "Error", message: "DeviceMotion update: \(error)", preferredStyle: .alert)
-                let okButton = UIAlertAction(title: "OK", style: .default, handler: nil)
-                alert.addAction(okButton)
-                self.viewController.present(alert, animated: true, completion: nil)
-            }
-        })
-    }
-    
-    func stopMotionUpdate() {
-        self.stopDeviceMotionUpdates()
-    }
-    
-    func startMagnetUpdate() {
-        self.startMagnetometerUpdates(to: magnetQueue, withHandler: {
-            (data: CMMagnetometerData?, error: Error?) in
-            self.outputMagnetometerData(data)
-            if let error = error {
-                let alert = UIAlertController(title: "Error", message: "Magnetometer update: \(error)", preferredStyle: .alert)
-                let okButton = UIAlertAction(title: "OK", style: .default, handler: nil)
-                alert.addAction(okButton)
-                self.viewController.present(alert, animated: true, completion: nil)
-            }
-        })
-    }
-    
-    func stopMagnetUpdate() {
-        self.stopMagnetometerUpdates()
-    }
-    
     func writeStringToFile(_ string: NSMutableString, _ filename: String) {
         guard let url = logFile else {
             fatalError()
@@ -194,6 +241,12 @@ class CMManager: CMMotionManager {
     
     func startRecording() {
         isRecoding = true
+        startGyroAcceUpdate()
+        startMotionUpdate()
+        startMagnetUpdate()
+    }
+    
+    func startJudgingMotionState() {
         startGyroAcceUpdate()
         startMotionUpdate()
         startMagnetUpdate()

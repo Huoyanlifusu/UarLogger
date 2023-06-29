@@ -10,7 +10,11 @@ import ARKit
 
 class EnvDataCollector {
     var light = LightSensor(lightEstimate: 0.0, lightColorTemp: 0.0)
-    var feature = FeatureSensor(featurePointNum: 0)
+    var vc: ViewController?
+    
+    init( vc: ViewController? = nil) {
+        self.vc = vc
+    }
     
     var logFile: URL? {
         guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return nil }
@@ -18,13 +22,27 @@ class EnvDataCollector {
         return documentsDirectory.appendingPathComponent(fileName)
     }
     
-    
     func lightEstimation(_ frame: ARFrame, _ timeStamp: TimeInterval) {
         let lighting = frame.lightEstimate?.ambientIntensity ?? 0.0
         let colorTemp = frame.lightEstimate?.ambientColorTemperature ?? 0.0
         light.lightEstimate = lighting
         light.lightColorTemp = colorTemp
-        saveToFile(light, timeStamp)
+        setLightingConditionLabel(lighting)
+        if ScanConfig.isRecording {
+            saveToFile(light, timeStamp)
+        }
+    }
+    
+    func setLightingConditionLabel(_ lighting: CGFloat) {
+        if lighting > 900 && lighting < 1100 {
+            vc!.lightingIntensityLabel.text = "Neutral Lighing"
+        } else if lighting > 1400 {
+            vc!.lightingIntensityLabel.text = "Over Lighting"
+        } else if lighting < 700 && lighting > 300 {
+            vc!.lightingIntensityLabel.text = "Dim Lighting"
+        } else if lighting < 100 {
+            vc!.lightingIntensityLabel.text = "Darkness"
+        }
     }
     
     func saveToFile(_ light: LightSensor, _ time: TimeInterval) {

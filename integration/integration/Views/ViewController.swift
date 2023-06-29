@@ -17,13 +17,18 @@ import SwiftUI
 class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, ARSCNViewDelegate {
     // scene
     @IBOutlet weak var sceneView: ARSCNView!
+    @IBOutlet weak var panelView: UIView!
     
     // labels
     @IBOutlet weak var deviceLable: UILabel!
     @IBOutlet weak var infoLabel: UILabel!
+    @IBOutlet weak var lightingIntensityLabel: UILabel!
+    @IBOutlet weak var motionLabel: UILabel!
+    @IBOutlet weak var featureLabel: UILabel!
     
     // button
     @IBOutlet weak var flashlightButton: UIButton!
+    @IBOutlet weak var panelButton: UIButton!
     
     let coachingOverlayView = ARCoachingOverlayView()
     
@@ -47,6 +52,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     var alreadyAdd = false
     var couldDetect = true
     private var isRecording = false
+    private var isPanelShowing = false
     
     // ARKit & mathematical variables
     var camera: ARCamera?
@@ -63,8 +69,8 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
 
     private var frameNum: Int = 0
     private let dataCollector = DataCollector()
-    private let envCollector = EnvDataCollector()
-    private let featureSensor = FeatureSensor(featurePointNum: 0)
+    private var featureSensor: FeatureSensor?
+    private var envCollector: EnvDataCollector?
     private var cmManager: CMManager!
     
     // Custom UI components
@@ -123,11 +129,13 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     }()
     
     private var circleLayer: CALayer?
-    //viewdidload happen before viewdidappear
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         startup()
         ScanConfig.viewportsize = view.bounds.size
+        envCollector = EnvDataCollector(vc: self)
+        featureSensor = FeatureSensor(featurePointNum: 0, viewController: self)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -192,6 +200,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         
         circleLayer = recordingButton.layer.sublayers?.first(where: { $0 is CALayer }) as? CALayer
         cmManager = CMManager(viewController: self)
+        cmManager.startJudgingMotionState()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -426,13 +435,13 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     //monitoring 30fps update
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         if lightSensorSwitch.isOn {
-            envCollector.lightEstimation(frame, frame.timestamp)
-            lightSensorLabel.text = "\(envCollector.light.lightEstimate)"
+            envCollector!.lightEstimation(frame, frame.timestamp)
+            lightSensorLabel.text = "\(envCollector!.light.lightEstimate)"
         }
+        featureSensor!.featureCounter(frame, frame.timestamp)
         camera = frame.camera
 //        self.envCollector.featureExtractor(frame, frame.timestamp)
         if isRecording {
-            self.featureSensor.featureExtractor(frame, frame.timestamp)
             guard let arkitData = StoredData.peerPosInARKit,
                   let niData = StoredData.peerPosInNI,
                   let distance = StoredData.distance,
@@ -601,7 +610,6 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     
     
     @IBAction func flashlight(_ sender: Any) {
-        print("1")
         guard let device = AVCaptureDevice.default(for: .video), device.hasTorch else {
                 let alertController = UIAlertController(title: "Flashlight is not supported", message: nil, preferredStyle: .alert)
                 alertController.addAction(UIAlertAction(title: "Understand", style: .default, handler: nil))
@@ -620,6 +628,23 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
                 alertController.addAction(UIAlertAction(title: "Understand", style: .default, handler: nil))
                 present(alertController, animated: true)
             }
+    }
+    
+    
+    @IBAction func popupPanel(_ sender: Any) {
+        if isPanelShowing {
+            UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseIn, animations: {
+                self.panelView.frame = CGRect(x: -250, y: 250, width: 250, height: 200)
+            })
+            panelButton.setTitle("Panel->", for: .normal)
+            isPanelShowing = false
+        } else {
+            UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseIn, animations: {
+                self.panelView.frame = CGRect(x: 0, y: 250, width: 250, height: 200)
+            })
+            panelButton.setTitle("<-Panel", for: .normal)
+            isPanelShowing = true
+        }
     }
     
     
@@ -760,10 +785,12 @@ extension ViewController {
     @objc func hitRecordingButton() {
         isRecording.toggle()
         if isRecording {
+            ScanConfig.isRecording = true
             circleLayer?.backgroundColor = UIColor.red.cgColor
             print("开始采集")
             cmManager.startRecording()
         } else {
+            ScanConfig.isRecording = false
             print("结束采集")
             circleLayer?.backgroundColor = UIColor.green.cgColor
             cmManager.endRecording()
