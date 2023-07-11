@@ -17,6 +17,7 @@ class CMManager: CMMotionManager {
     let UIQueue = DispatchQueue.main
     
     var isRecoding = false
+    var isFirstStamp = true
     
     var logFile: URL? {
         guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return nil }
@@ -52,6 +53,12 @@ class CMManager: CMMotionManager {
                 self.viewController.present(alert, animated: true, completion: nil)
             }
             if self.isRecoding {
+                if self.isFirstStamp {
+                    if let ts = data?.timestamp {
+                        self.isFirstStamp = false
+                        self.viewController.updateCMFirstStamp(ts)
+                    }
+                }
                 self.outputRotationData(data)
             }
         })
@@ -225,8 +232,8 @@ class CMManager: CMMotionManager {
     }
     
     func writeStringToFile(_ string: NSMutableString, _ filename: String) {
-        guard let url = logFile else {
-            fatalError()
+        guard let url = ScanConfig.fileURL else {
+            return
         }
         let filePath = (url.path as NSString)
                                 .appendingPathComponent((filename as NSString)

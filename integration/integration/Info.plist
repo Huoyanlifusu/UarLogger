@@ -2,10 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSCameraUsageDescription</key>
-	<string>This app needs camera to capture frame data</string>
-	<key>NSNearbyInteractionUsageDescription</key>
-	<string>This app needs Nearby Interaction to catch pos data</string>
 	<key>NSBonjourServices</key>
 	<array>
 		<string>_zyy-artest._tcp</string>

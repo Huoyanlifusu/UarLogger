@@ -28,9 +28,9 @@ class EnvDataCollector {
         light.lightEstimate = lighting
         light.lightColorTemp = colorTemp
         setLightingConditionLabel(lighting)
-        if ScanConfig.isRecording {
-            saveToFile(light, timeStamp)
-        }
+//        if ScanConfig.isRecording {
+//        saveToFile(light, timeStamp)
+//        }
     }
     
     func setLightingConditionLabel(_ lighting: CGFloat) {

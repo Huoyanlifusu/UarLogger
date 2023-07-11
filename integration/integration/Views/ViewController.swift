@@ -53,9 +53,11 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     var couldDetect = true
     private var isRecording = false
     private var isPanelShowing = false
+    private var isFirstFrame = false
     
     // ARKit & mathematical variables
     var camera: ARCamera?
+    var currentFrame: ARFrame?
     var peerWorldTransFromARKit: simd_float4x4?
     var anchorFromPeer: ARAnchor?
     var eularAngle: simd_float3?
@@ -72,6 +74,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     private var featureSensor: FeatureSensor?
     private var envCollector: EnvDataCollector?
     private var cmManager: CMManager!
+    private var timeStampAlignment: TimeStampAlignment!
     
     // Custom UI components
     private let recordingButton: UIButton = {
@@ -136,6 +139,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         ScanConfig.viewportsize = view.bounds.size
         envCollector = EnvDataCollector(vc: self)
         featureSensor = FeatureSensor(featurePointNum: 0, viewController: self)
+        timeStampAlignment = TimeStampAlignment()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -440,16 +444,17 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         }
         featureSensor!.featureCounter(frame, frame.timestamp)
         camera = frame.camera
-//        self.envCollector.featureExtractor(frame, frame.timestamp)
         if isRecording {
+            if !isFirstFrame {
+                isFirstFrame = true
+                timeStampAlignment.AR_First_Stamp = frame.timestamp
+            }
             guard let arkitData = StoredData.peerPosInARKit,
                   let niData = StoredData.peerPosInNI,
                   let distance = StoredData.distance,
                   let poseDataAR = StoredData.peerPoseInARKit else { return }
             collectorQUeue.async { [self] in
-                print("采集第\(frameNum)数据")
-                dataCollector.collectData(arkitData, niData, poseDataAR, frame, distance, frameNum, frame.timestamp)
-                frameNum += 1
+                dataCollector.collectData(arkitData, niData, poseDataAR, frame, distance, frame.timestamp)
             }
         }
     }
@@ -699,43 +704,6 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         StoredData.distance = distance
     }
     
-
-    
-    private func updateSessionInfoLabel(for frame: ARFrame, trackingState: ARCamera.TrackingState) {
-        // Update the UI to provide feedback on the state of the AR experience.
-        let message: String
-        
-        guard let multipeer = mpc else { return }
-        
-        switch trackingState {
-        case .normal where frame.anchors.isEmpty && multipeer.connectedPeers.isEmpty:
-            // No planes detected; provide instructions for this app's AR interactions.
-            message = "Move around to map the environment, or wait to join a shared session."
-        case .normal where multipeer.connectedPeers.isEmpty && mapProvider == nil:
-            let peerNames = multipeer.connectedPeers.map({ $0.displayName }).joined(separator: ", ")
-            message = "Connected with \(peerNames)."
-        case .notAvailable:
-            message = "Tracking unavailable."
-        case .limited(.excessiveMotion):
-            message = "Tracking limited - Move the device more slowly."
-        case .limited(.insufficientFeatures):
-            message = "Tracking limited - Point the device at an area with visible surface detail, or improve lighting conditions."
-        case .limited(.initializing) where mapProvider != nil,
-             .limited(.relocalizing) where mapProvider != nil:
-            message = "Received map from \(mapProvider!.displayName)."
-        case .limited(.relocalizing):
-            message = "Resuming session — move to where you were when the session was interrupted."
-        case .limited(.initializing):
-            message = "Initializing AR session."
-        default:
-            // No feedback needed when tracking is normal and planes are visible.
-            // (Nor when in unreachable limited-tracking states.)
-            message = ""
-        }
-        
-        infoLabel.text = message
-    }
-    
     //use button to reset tracking
     @IBAction func resetTracking(_ sender: UIButton?) {
         let configuration = ARWorldTrackingConfiguration()
@@ -786,12 +754,13 @@ extension ViewController {
         isRecording.toggle()
         if isRecording {
             ScanConfig.isRecording = true
+            ScanConfig.fileURL = getRecordingDirectory()
             circleLayer?.backgroundColor = UIColor.red.cgColor
-            print("开始采集")
+            Logger.shared.debugPrint("开始采集")
             cmManager.startRecording()
         } else {
             ScanConfig.isRecording = false
-            print("结束采集")
+            Logger.shared.debugPrint("结束采集")
             circleLayer?.backgroundColor = UIColor.green.cgColor
             cmManager.endRecording()
         }
@@ -820,6 +789,10 @@ extension ViewController {
                 print("Error: \(error.localizedDescription)")
             }
         }
+    }
+    
+    func updateCMFirstStamp(_ timeStamp: TimeInterval) {
+        timeStampAlignment.CM_First_Stamp = timeStamp
     }
 }
 

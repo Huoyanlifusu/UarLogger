@@ -163,3 +163,30 @@ extension UIButton {
         }, completion: nil)
     }
 }
+
+func getRecordingId() -> String {
+    let dateFormatter = DateFormatter()
+//        dateFormatter.dateFormat = "yyyy-MM-dd_HH-mm-ssZ"
+    dateFormatter.dateFormat = "yyyy-MM-dd'T'HH-mm-ssZ"
+    let dateString = dateFormatter.string(from: Date())
+    
+    let recordingId = dateString + "_" + UIDevice.current.identifierForVendor!.uuidString
+    
+    return recordingId
+}
+
+func getRecordingDirectory() -> URL {
+    let recordingID = getRecordingId()
+    let fmgr = FileManager.default
+    var url = fmgr.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    url = url.appendingPathComponent(recordingID)
+    if !fmgr.fileExists(atPath: url.absoluteString) {
+        do {
+            try fmgr.createDirectory(at: url, withIntermediateDirectories: true, attributes: nil)
+        }
+        catch {
+            Logger.shared.debugPrint(error.localizedDescription)
+        }
+    }
+    return url
+}
