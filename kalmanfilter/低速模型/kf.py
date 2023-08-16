@@ -1,3 +1,4 @@
+#情况1 环境条件合适，VIO效果比UWB好
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
@@ -28,8 +29,8 @@ Pk = np.identity(3) * 10
 
 std = [np.var(xv), np.std(yv, ddof=1), np.std(zv, ddof=1),
        np.var(xu), np.std(yu, ddof=1), np.std(zu, ddof=1)]
-
-Wk = np.diag(std)
+Wn = np.diag([1,1,1,100,100,100])
+Wk = np.diag(std) + Wn
 # 状态方程噪声
 Q = np.identity(3) * 0.005
 
