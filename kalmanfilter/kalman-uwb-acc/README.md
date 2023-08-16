@@ -1,3 +1,5 @@
+匀加速模型
+
 Result
 
 ![1081681985292_ pic](https://user-images.githubusercontent.com/54940667/233334737-8101ebe9-dcb3-4bd3-a13d-e3500d1b9516.jpg)
