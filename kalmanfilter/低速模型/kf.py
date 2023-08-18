@@ -1,19 +1,19 @@
-#情况1 环境条件合适，VIO效果比UWB好
+#!/usr/bin/env python3
+
 import csv
 import numpy as np
 import matplotlib.pyplot as plt
+import os.path
 
 vio_points = []
 ni_points = []
 cam_move = []
-with open('ar_data2.csv', newline = '') as csvfile:
+path = os.path.abspath("ar_data2.csv")
+with open(path, newline = '') as csvfile:
     reader = csv.reader(csvfile, delimiter = ',', quotechar = '"')
     next(reader)
     i = 0
     for row in reader:
-        if i < 2700:
-            i += 1
-            continue
         vio_points.append(list(map(float, row[0].split('+'))))
         ni_points.append(list(map(float, row[1].split('+'))))
         cam_move.append(list(map(float, row[2].split('+'))))
@@ -27,9 +27,9 @@ Ak = np.identity(3)
 Ck = np.concatenate((np.identity(3), np.identity(3)))
 Pk = np.identity(3) * 10
 
-std = [np.var(xv), np.std(yv, ddof=1), np.std(zv, ddof=1),
-       np.var(xu), np.std(yu, ddof=1), np.std(zu, ddof=1)]
-Wn = np.diag([1,1,1,100,100,100])
+std = [np.std(xv), np.std(yv, ddof=1), np.std(zv, ddof=1),
+       np.var(xu), np.var(yu, ddof=1), np.var(zu, ddof=1)]
+Wn = np.diag([0.1, 0.1, 0.1, 10, 1, 10])
 Wk = np.diag(std) + Wn
 # 状态方程噪声
 Q = np.identity(3) * 0.005
@@ -103,5 +103,23 @@ plt.plot(t1, vio_diff_x, color = 'g', label = 'vio err with gt')
 # plt.plot(t1, vx, color = 'g', label = 'x velocity prediction')
 plt.xlabel('time interval')
 plt.ylabel('x axis')
+plt.legend()
+plt.show()
+
+plt.plot(t1, ni_diff_y, color = 'r', label = 'ni err with gt')
+plt.plot(t1, kalman_diff_y, color = 'b', label = 'kalman err with gt')
+plt.plot(t1, vio_diff_y, color = 'g', label = 'vio err with gt')
+# plt.plot(t1, vx, color = 'g', label = 'x velocity prediction')
+plt.xlabel('time interval')
+plt.ylabel('y axis')
+plt.legend()
+plt.show()
+
+plt.plot(t1, ni_diff_z, color = 'r', label = 'ni err with gt')
+plt.plot(t1, kalman_diff_z, color = 'b', label = 'kalman err with gt')
+plt.plot(t1, vio_diff_z, color = 'g', label = 'vio err with gt')
+# plt.plot(t1, vx, color = 'g', label = 'x velocity prediction')
+plt.xlabel('time interval')
+plt.ylabel('z axis')
 plt.legend()
 plt.show()
