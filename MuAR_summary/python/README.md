@@ -22,3 +22,13 @@ __Command Line Under Mac__
 ```
 pip install opencv-python
 ```
+
+__Import in Python__
+
+```
+import cv2
+```
+
+## Details
+
+### Environmental Analysis
