@@ -15,7 +15,7 @@ __Python__ 2.0 or above
 
 ## Getting Started
 
-### Package Installation
+### OpenCV Installation
 
 __Command Line Under Mac__
 
