@@ -11,7 +11,7 @@
 * archess
 * ObjectCapture
 
-## Getting Started
+## Details
 
 ### Integration
 
