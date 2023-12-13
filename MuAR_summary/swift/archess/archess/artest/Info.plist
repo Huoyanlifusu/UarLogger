@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>XingShu.ttf</string>
+		<string>鸿雷板书简体.ttf</string>
+	</array>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_zyy-artest._tcp</string>
+		<string>_zyy-artest._udp</string>
+	</array>
+	<key>Privacy - Nearby Interaction Allow Once Usage Description</key>
+	<string>This app needs nearby interaction usage</string>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIImageName</key>
+		<string>logo</string>
+		<key>UIColorName</key>
+		<string>LaunchScreenBackground</string>
+	</dict>
+</dict>
+</plist>
