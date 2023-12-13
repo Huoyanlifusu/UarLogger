@@ -1,4 +1,8 @@
+# Back-end Optimization System
+
 ## Requirement
+
+__Python__ 2.0 or above
 
 ## Directories
 
@@ -8,3 +12,13 @@
 * bias
 * camera calibration
 * kalman
+
+## Getting Started
+
+### Package Installation
+
+__Command Line Under Mac__
+
+```
+pip install opencv-python
+```
