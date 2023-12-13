@@ -17,7 +17,7 @@ __Python__ 2.0 or above
 
 ### OpenCV Installation
 
-__Command Line Under Mac__
+__Mac Command Line__
 
 ```
 pip install opencv-python
