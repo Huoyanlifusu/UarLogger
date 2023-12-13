@@ -16,8 +16,7 @@ Key Idea: Integrate UWB and ARKit(VIO) ranging data with kalman filtering under 
 
 ## Directories
 
-* __Integration__ capturing relative distance from VIO algo and UWB sensor
-* __MuAR_Summary__ other files
+* __MuAR_Summary__ project files
 
 ## Version History
 * 0.1
