@@ -11,7 +11,7 @@ __Python__ 2.0 or above
 * LM optimization
 * bias
 * camera calibration
-* kalman
+* kalman: Kalman Filter to integrate ranging data
 
 ## Getting Started
 
