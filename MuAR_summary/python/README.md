@@ -32,3 +32,7 @@ import cv2
 ## Details
 
 ### Environmental Analysis
+
+### Kalman
+
+Main Content: __Kalman filter__ based on __slow motion model__ and __constant velocity motion model__
