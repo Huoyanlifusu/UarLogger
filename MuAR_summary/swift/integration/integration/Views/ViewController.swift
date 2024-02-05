@@ -117,6 +117,16 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         button.addTarget(self, action: #selector(ViewController.clearTempFolder), for: .touchUpInside)
         return button
     }()
+    private let clearARObjButton: UIButton = {
+        let button = UIButton()
+        button.frame = CGRect(x: 0, y: 0, width: 80, height: 30)
+        button.layer.cornerRadius = 10
+        button.backgroundColor = .white
+        button.setTitleColor(.black, for: .normal)
+        button.setTitle("Clear", for: .normal)
+        button.addTarget(self, action: #selector(ViewController.removeAllAnchorsYouCreated), for: .touchUpInside)
+        return button
+    }()
     private let lightSensorSwitch: UISwitch = {
         let sw = UISwitch()
         sw.frame = CGRect(x: 0, y: 0, width: 80, height: 40)
@@ -222,10 +232,11 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         self.view.addSubview(recordingButton)
 //        self.view.addSubview(projectButton)
         self.view.addSubview(deleteAllDataButton)
-        self.view.addSubview(featurePointNumDetectButton)
-        self.view.addSubview(lightSensorSwitch)
-        self.view.addSubview(featurePointLabel)
-        self.view.addSubview(lightSensorLabel)
+        self.view.addSubview(clearARObjButton)
+//        self.view.addSubview(featurePointNumDetectButton)
+//        self.view.addSubview(lightSensorSwitch)
+//        self.view.addSubview(featurePointLabel)
+//        self.view.addSubview(lightSensorLabel)
         
         circleLayer = recordingButton.layer.sublayers?.first(where: { $0 is CALayer }) as? CALayer
         cmManager = CMManager(viewController: self)
@@ -249,9 +260,15 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
 //                                     y: UIScreen.main.bounds.size.height*3/4 + 50,
 //                                     width: 100, height: 50)
         deleteAllDataButton.frame = CGRect(x: 30,
-                                           y: 40,
+                                           y: 80,
                                            width: 150,
                                            height: 40)
+        deleteAllDataButton.addSinkAnimation()
+        clearARObjButton.frame = CGRect(x: 280,
+                                        y: 80,
+                                        width: 80,
+                                        height: 40)
+        clearARObjButton.addSinkAnimation()
         lightSensorSwitch.frame = CGRect(x: 30,
                                          y: 100,
                                          width: 80,
@@ -268,7 +285,8 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
                                                    y: UIScreen.main.bounds.size.height*3/4+40,
                                                    width: 40,
                                                    height: 40)
-        deleteAllDataButton.addSinkAnimation()
+        panelButton.addSinkAnimation()
+        panelView.layer.cornerRadius = 30
     }
     
     
@@ -472,14 +490,14 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     var counter: Int = 0
     //monitoring 30fps update
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        print(frame.camera.intrinsics)
+//        print(frame.camera.intrinsics)
         if lightSensorSwitch.isOn {
             envCollector!.lightEstimation(frame, frame.timestamp)
             lightSensorLabel.text = "\(envCollector!.light.lightEstimate)"
         }
         featureSensor!.featureCounter(frame, frame.timestamp)
         camera = frame.camera
-        print(camera?.transform)
+//        print(camera?.transform)
         if isDectecingFp {
             fpNumSum += featureSensor?.featureCounter(frame) ?? 0
             detectTimeInterval += 1

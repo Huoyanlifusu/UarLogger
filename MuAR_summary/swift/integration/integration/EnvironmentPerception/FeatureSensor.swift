@@ -21,7 +21,7 @@ class FeatureSensor {
     
     func featureCounter(_ frame: ARFrame, _ timeStamp: TimeInterval) {
         featurePointNum = frame.rawFeaturePoints?.points.count ?? 0
-        vc?.featureLabel.text = "\(featurePointNum)个"
+        vc?.featureLabel.text = "\(featurePointNum)"
 //        if featurePointNum >= 50 {
 //            vc?.featureLabel.text = "Too much"
 //        } else if featurePointNum >= 40 && featurePointNum < 50 {
