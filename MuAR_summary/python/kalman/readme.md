@@ -1,11 +1,19 @@
 ## Useful Files
 
-### 8-24/kf_old.py
+### AR_NI_DATA.xlsx (hard requirement)
 
-* Key idea: change [Wn] value to predict ranging between UWB curve and VIO curve, __slow motion__ model
-* Mathemetical Implementation: { https://blog.csdn.net/gangdanerya/article/details/105057842 }
+* Original data recorded by UarLogger
 
-### 8-24/kf_new.py
+### AR_NI_DATA.csv (optional)
 
-* Key idea: kalman filter with __uniform motion__ model
+* A .csv file of original data, not required in kf_new.py
+
+### kf_new.py (hard requirement)
+
+* Key Idea: kalman filter with __uniform motion__ model
+* Parameter Setting:
+*  __Processing noise__ diag(0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001)
+*  __Measurement noise__ diag(np.var(NIx)*150, np.var(NIy)*150, np.var(NIz)*150, np.var(vx)*3, np.var(vy)*3, np.var(vz)*3)
+*  __initial value of state variable__ x0 = [0, 0, 0, 0, 0, 0]
+*  __init value of state covariance__ P0 = diag(np.var(NIx), np.var(NIy), np.var(NIz), np.var(vx), np.var(vy), np.var(vz))
 * References: { https://www.bzarg.com/p/how-a-kalman-filter-works-in-pictures/ }
