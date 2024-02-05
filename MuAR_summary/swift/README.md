@@ -6,15 +6,13 @@
 
 ## Directories
 
-* integration
-* VerseeScan
-* archess
-* ObjectCapture
+### Integration
+### Archess
 
 ## Details
 
 ### Integration
-
-
+* Also called __UarLogger__, the application logs VIO and UWB localization data simultaneously.
 
 ### VerseeScan
+* A project of dual-user ARGomoku, many bugs, just for fun!
