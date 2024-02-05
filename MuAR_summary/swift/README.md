@@ -7,11 +7,6 @@
 ## Directories
 
 ### Integration
-### Archess
-
-## Details
-
-### Integration
 * Also called __UarLogger__, the application logs VIO and UWB localization data simultaneously.
 
 ### VerseeScan
