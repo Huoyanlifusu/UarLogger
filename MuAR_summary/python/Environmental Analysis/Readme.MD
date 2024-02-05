@@ -2,16 +2,15 @@
 
 ## whitewall
 
-$\qquad$ 
-### xiangxian.py
+* Visual texture is white wall
+
+__xiangxian.py__
 
 * Visual texture is white wall
 * Boxplot evaluation of UWB and VIO localization
 
-$\qquad$ 
-### xiangxianlighting.py
+__xiangxianlighting.py__
 
-* Visual texture is white wall
 * Boxplot evaluation of VIO localization
 * Lighting condition is seperated to neutral lighting and dimly lighting
 
