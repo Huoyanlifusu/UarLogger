@@ -2,7 +2,7 @@
 
 ## Requirement
 
-* __Xcode 14.0
+* __Xcode 14.0__ or above
 
 ## Directories
 
