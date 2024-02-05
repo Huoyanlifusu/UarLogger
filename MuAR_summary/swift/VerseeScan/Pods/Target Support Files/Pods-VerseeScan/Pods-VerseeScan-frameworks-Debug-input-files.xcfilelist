@@ -1,9 +1,0 @@
-${PODS_ROOT}/Target Support Files/Pods-VerseeScan/Pods-VerseeScan-frameworks.sh
-${BUILT_PRODUCTS_DIR}/FirebaseAuth/FirebaseAuth.framework
-${BUILT_PRODUCTS_DIR}/FirebaseCore/FirebaseCore.framework
-${BUILT_PRODUCTS_DIR}/FirebaseCoreInternal/FirebaseCoreInternal.framework
-${BUILT_PRODUCTS_DIR}/GDPerformanceView-Swift/GDPerformanceView_Swift.framework
-${BUILT_PRODUCTS_DIR}/GTMSessionFetcher/GTMSessionFetcher.framework
-${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework
-${BUILT_PRODUCTS_DIR}/Progress/Progress.framework
-${BUILT_PRODUCTS_DIR}/PromisesObjC/FBLPromises.framework
