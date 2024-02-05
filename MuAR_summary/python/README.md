@@ -7,10 +7,6 @@ __Python__ 3.0 or above
 ## Directories
 
 * Environmental Analysis
-* Feature Matching
-* LM optimization
-* bias
-* camera calibration
 * kalman: Kalman Filter to integrate ranging data
 
 ## Getting Started
