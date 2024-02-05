@@ -5,6 +5,10 @@
 
 ## Directories
 
-* __swift__ - front-end capture system
-* __python__ - back-end optimization system
-* __Experiment Scheme__ - experiment scheme
+### __swift__ 
+* front-end logging tool, writing in swift
+### __python__ 
+* back-end environmental analysis and kalman filter
+
+### __Experiment Scheme__ 
+* experiment scheme
