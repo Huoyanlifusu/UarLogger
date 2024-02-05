@@ -2,7 +2,7 @@
 
 ## Requirement
 
-* __Xcode Beta__ 17.0 or above
+* __Xcode 14.0
 
 ## Directories
 
