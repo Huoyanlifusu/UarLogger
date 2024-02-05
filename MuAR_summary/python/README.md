@@ -2,7 +2,7 @@
 
 ## Requirement
 
-__Python__ 2.0 or above
+__Python__ 3.0 or above
 
 ## Directories
 
