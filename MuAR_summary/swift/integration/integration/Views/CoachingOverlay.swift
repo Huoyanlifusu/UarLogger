@@ -1,7 +1,7 @@
 import Foundation
 import ARKit
 
-@available(iOS 16.0, *)
+@available(iOS 15.0, *)
 extension ViewController: ARCoachingOverlayViewDelegate {
     func coachingOverlayViewWillActivate(_ coachingOverlayView: ARCoachingOverlayView) {
         
