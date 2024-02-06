@@ -22,7 +22,7 @@ Key Idea: Integrate UWB and ARKit(VIO) ranging data with kalman filtering under 
 * 0.1
     * Initial Release
  
-## Acknowledgments
+## Citations
 Inspired by
 * [ScanKit] {https://github.com/Kenneth-Schroeder/ScanKit }
 * [ARKit] {https://developer.apple.com/augmented-reality/ }
