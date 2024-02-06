@@ -13,7 +13,7 @@ import MultipeerConnectivity
 import RealityKit
 import SwiftUI
 
-@available(iOS 15.0, *)
+@available(iOS 16.0, *)
 class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, ARSCNViewDelegate {
     // scene
     @IBOutlet weak var sceneView: ARSCNView!
