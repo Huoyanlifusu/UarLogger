@@ -1,4 +1,4 @@
-# Improved Indoor Ranging Method
+# UarLogger: 
  
 ## Description
 Key Idea: Integrate UWB and ARKit(VIO) ranging data with kalman filtering under indoor context.
