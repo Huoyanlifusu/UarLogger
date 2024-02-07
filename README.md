@@ -10,10 +10,6 @@ Key Idea: Integrate UWB and ARKit(VIO) ranging data with kalman filtering under 
 * Xcode 14.0 or above
 * iOS 16.0 or above (NI hard requirement)
 
-### Signing
-* login your __Apple account__
-* __Bundle Identifier__ setting: to the form of __com.xxx.yyy__ or __com.xxx.yyy.zzz__
-
 ## Directories
 * __MuAR_Summary__: main project files
 
@@ -22,6 +18,10 @@ Key Idea: Integrate UWB and ARKit(VIO) ranging data with kalman filtering under 
     * Initial Release
 
 ## Tutorial & Remarks
+
+### Signing
+* login your __Apple account__
+* __Bundle Identifier__ setting: to the form of __com.xxx.yyy__ or __com.xxx.yyy.zzz__
 
 ### Data Extration from iOS Devices to Mac or Other PCs
 * Step 1: connect iOS device and PC by data cable
