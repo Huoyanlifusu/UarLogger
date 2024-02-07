@@ -7,7 +7,8 @@ Key Idea: Integrate UWB and ARKit(VIO) ranging data with kalman filtering under 
 
 ### Dependencies
 * Python 2.0 or above
-* Xcode beta 17.0 or above
+* Xcode 14.0 or above
+* iOS 16.0 or above (NI hard requirement)
 
 ### In Running
 * __Signing In Xcode__ : Change __Bundle Identifier__ to like __com.xxx.yyy__
