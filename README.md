@@ -14,11 +14,8 @@ Key Idea: Integrate UWB and ARKit(VIO) ranging data with kalman filtering under 
 * login your __Apple account__
 * __Bundle Identifier__ setting: to the form of __com.xxx.yyy__ or __com.xxx.yyy.zzz__
 
-## Authors
-
 ## Directories
-
-* __MuAR_Summary__ project files
+* __MuAR_Summary__: main project files
 
 ## Version History
 * 0.1
@@ -28,5 +25,5 @@ Key Idea: Integrate UWB and ARKit(VIO) ranging data with kalman filtering under 
 Inspired by
 * [ScanKit] {https://github.com/Kenneth-Schroeder/ScanKit }
 * [ARKit] {https://developer.apple.com/augmented-reality/ }
-* [Nearby Interaction] { [https://docs-assets.developer.apple.com/published/9e06bcddfa/ImplementingInteractionsBetweenUsersInCloseProximity.zip] }
+* [Nearby Interaction Demo] { [https://docs-assets.developer.apple.com/published/9e06bcddfa/ImplementingInteractionsBetweenUsersInCloseProximity.zip] }
 * [Multipeer Connectivity] {https://developer.apple.com/documentation/multipeerconnectivity }
