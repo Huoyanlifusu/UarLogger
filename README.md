@@ -17,9 +17,17 @@ Key Idea: Integrate UWB and ARKit(VIO) ranging data with kalman filtering under 
 ## Directories
 * __MuAR_Summary__: main project files
 
-## Version History
+## Version
 * 0.1
     * Initial Release
+
+## Tutorial & Remarks
+
+### Data Extration from iOS Devices to Mac or Other PCs
+* Step 1: connect iOS device and PC by data cable
+* Step 2: open "Window-Device and Simulators" menu
+* Step 3: choose "integration" row, press circle shape button below, then choose download container option
+* Step 4: find the relating data folders and save into PC.
  
 ## Citations
 Inspired by
