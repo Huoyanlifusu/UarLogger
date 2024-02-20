@@ -27,7 +27,7 @@
 ### Signing
 * Login your __Apple account__ and choose that as your team
 * Setting __Bundle Identifier__ to the form of __com.xxx.yyy__ or __com.xxx.yyy.zzz__
-* ![image](../pics/signing.jpg)
+* ![image](./pics/signing.jpg)
 
 ### Data Extration from iOS Devices to Mac or Other PCs
 * Step 1: connect iOS device and PC by data cable
@@ -36,7 +36,7 @@
 * Step 4: find the relating data folders and save into PC.
 
 ### Application Flowchart
-* ![image](../pics/application_flowchart.png)
+* ![image](./pics/application_flowchart.png)
  
 ## Citations
 Inspired by
