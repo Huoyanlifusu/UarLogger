@@ -1,4 +1,4 @@
-# Back-end Localization Data Processing
+# Back-end Localization Data Processing Using Python
 
 ## Requirement
 
@@ -6,29 +6,19 @@ __Python__ 3.0 or above
 
 ## Directories
 
-* Environmental Analysis
+* Environmental Analysis: Box Plot Analysis of VIO and UWB Localization Data in Error with Ground Truth
 * kalman: Kalman Filter to integrate ranging data
 
 ## Getting Started
 
-### OpenCV Installation
-
-__Mac Command Line__
-
-```
-pip install opencv-python
-```
-
-__Import in Python__
-
-```
-import cv2
-```
+* Download Python IDE such as __VSCode__
+* Put table files and python script under same directory
+* Using Python interpretor to run the script
 
 ## Details
-
-### Environmental Analysis
 
 ### Kalman
 
 * Main Content: __Kalman filter__ based on __slow motion model__ and __constant velocity motion model__
+
+## Experimental Evaluation
