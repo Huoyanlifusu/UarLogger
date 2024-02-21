@@ -30,9 +30,10 @@
 
 ### Data Extration from iOS Devices to Mac or Other PCs
 * Step 1: connect iOS device and PC by data cable
-* Step 2: open "Window-Device and Simulators" menu
-* Step 3: choose "integration" row, press circle shape button below, then choose download container option
-* Step 4: find the relating data folders and save into PC.
+* Step 2: open __Window__ - __Device and Simulators__ menu
+* Step 3: Find your connected devices, in the __INSTALLED APPS__ section, select __UarLogger demo__
+* Step 4: Choose __Download Container__ option below and find the directory to save.
+* Step 5: There might be a lot of complicate data folders using dynamic sandbox storage, the folder is named based on recording start time, like "xxxx14-50-21xxx".
 
 ### Application Flowchart
 * ![image](./pics/application_flowchart.png)
