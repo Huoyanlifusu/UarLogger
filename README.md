@@ -2,7 +2,6 @@
  
 ## Overview
 
-### Key Contribution: 
 * Design an iOS application to record UWB and VIO localization data between two users simultaneously and monitor some environmental conditions like lighting, which could be a useful tool for further research.
 * Compare VIO and UWB localization under different contexts to prove the effectiveness of the app tool.
 * Integrate UWB and VIO localization data using kalman filtering when user shake the device, improving localization accuracy under such condition.
