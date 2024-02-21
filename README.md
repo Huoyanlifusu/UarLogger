@@ -1,6 +1,6 @@
 # UarLogger: 
  
-## Description
+## Overview
 
 ### Key Contribution: 
 * Design an iOS application to record UWB and VIO localization data between two users simultaneously and monitor some environmental conditions like lighting, which could be a useful tool for further research.
