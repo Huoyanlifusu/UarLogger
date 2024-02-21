@@ -584,7 +584,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XH4AA5D82X;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = integration/Info.plist;
+				INFOPLIST_FILE = UarLogger/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "This app needs camera to capture frame data";
 				INFOPLIST_KEY_NSNearbyInteractionUsageDescription = "This app needs Nearby Interaction to catch pos data";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -617,7 +617,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XH4AA5D82X;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = integration/Info.plist;
+				INFOPLIST_FILE = UarLogger/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "This app needs camera to capture frame data";
 				INFOPLIST_KEY_NSNearbyInteractionUsageDescription = "This app needs Nearby Interaction to catch pos data";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
