@@ -1,4 +1,6 @@
-# Back-end Localization Data Processing Using Python
+# Overview
+
+* Mainly some back-end data processing Python scripts as examples
 
 ## Requirement
 
@@ -6,19 +8,13 @@ __Python__ 3.0 or above
 
 ## Directories
 
-* Environmental Analysis: Box Plot Analysis of VIO and UWB Localization Data in Error with Ground Truth
-* kalman: Kalman Filter to integrate ranging data
+* Environmental Analysis: __Error Analysis__ with ground truth under different lighting conditions and visual textures
+* kalman: __Kalman filter__ which is based on __constant velocity motion model__ to integrate localization data
 
 ## Getting Started
 
 * Download Python IDE such as __VSCode__
 * Put table files and python script under same directory
 * Using Python interpretor to run the script
-
-## Details
-
-### Kalman
-
-* Main Content: __Kalman filter__ based on __slow motion model__ and __constant velocity motion model__
 
 ## Experimental Evaluation
