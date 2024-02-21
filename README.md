@@ -26,7 +26,8 @@
 ### Signing
 * Login your __Apple account__ and choose that as your team
 * Setting __Bundle Identifier__ to the form of __com.xxx.yyy__ or __com.xxx.yyy.zzz__
-* ![image](./pics/signing.jpg)
+
+![image](./pics/signing.jpg)
 
 ### Data Extration from iOS Devices to Mac or Other PCs
 * Step 1: connect iOS device and PC by data cable
@@ -36,7 +37,7 @@
 * Step 5: There might be a lot of complicate data folders using dynamic sandbox storage, the folder is named based on recording start time, like "xxxx14-50-21xxx".
 
 ### Application Flowchart
-* ![image](./pics/application_flowchart.png)
+![image](./pics/application_flowchart.png)
  
 ## Citations
 Inspired by
