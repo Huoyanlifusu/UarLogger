@@ -34,7 +34,7 @@
 * Step 2: open __Window__ - __Device and Simulators__ menu
 * Step 3: Find your connected devices, in the __INSTALLED APPS__ section, select __UarLogger demo__
 * Step 4: Choose __Download Container__ option below and find the directory to save.
-* Step 5: There might be a lot of complicate data folders using dynamic sandbox storage, the folder is named based on recording start time, like "xxxx14-50-21xxx".
+* Step 5: There might be a lot of complicate data folders using dynamic sandbox storage, the folder's name is begin with starting time of recording, such as "2024-02-22T13-33-53xxx".
 
 ![image](./pics/tutorial_downloadfile.jpg)
 
