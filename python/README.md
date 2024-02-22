@@ -16,5 +16,3 @@
 * Download Python IDE such as __VSCode__
 * Put table files and python script under same directory
 * Using Python interpretor to run the script
-
-## Experimental Evaluation
