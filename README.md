@@ -37,9 +37,6 @@
 * Step 5: There might be a lot of complicate data folders using dynamic sandbox storage, the folder's name is begin with starting time of recording, such as "2024-02-22T13-33-53xxx".
 
 ![image](./pics/tutorial_downloadfile.jpg)
-
-### System Architexture
-![image](./pics/systemarc.png)
  
 ## Citations
 Inspired by
