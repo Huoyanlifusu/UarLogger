@@ -36,6 +36,8 @@
 * Step 4: Choose __Download Container__ option below and find the directory to save.
 * Step 5: There might be a lot of complicate data folders using dynamic sandbox storage, the folder is named based on recording start time, like "xxxx14-50-21xxx".
 
+![image](./pics/tutorial_downloadfile.jpg)
+
 ### Application Flowchart
 ![image](./pics/application_flowchart.png)
  
