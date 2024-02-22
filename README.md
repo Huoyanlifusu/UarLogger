@@ -14,8 +14,8 @@
 * Two iOS devices with iOS version 16.0 or higher (Nearby Interaction requirement)
 
 ## Directories
-* UarLogger_GUI: iOS application section
-* python: backend analysis script and kalman filter
+* __UarLogger_Demo__: iOS application section
+* __python__: backend analysis and kalman filter script
 
 ## Version
 * 0.1
