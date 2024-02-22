@@ -9,7 +9,7 @@
 ## Directories
 
 * __Environmental Analysis__ measures the localization error with ground truth between UWB and VIO localization data under different lighting conditions and visual textures
-* __kalman__ designs a Kalman filter which is based on constant velocity motion model to integrate UWB and VIO localization data under condition that user shake the smartphone
+* __kalman__ designs a Kalman filter which is based on constant velocity motion model to integrate UWB and VIO localization data under condition that user shakes the iOS device
 
 ## Getting Started
 
