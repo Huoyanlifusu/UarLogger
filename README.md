@@ -38,8 +38,8 @@
 
 ![image](./pics/tutorial_downloadfile.jpg)
 
-### Application Flowchart
-![image](./pics/application_flowchart.png)
+### System Architexture
+![image](./pics/systemarc.png)
  
 ## Citations
 Inspired by
