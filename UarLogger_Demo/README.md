@@ -6,3 +6,6 @@
 
 * __Xcode 14.0__ or above
 
+## Application Flowchart
+
+![image](../pics/application_flowchart.png)
