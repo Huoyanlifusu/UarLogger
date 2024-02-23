@@ -1,13 +1,13 @@
 
 import Foundation
 import SwiftUI
+import UIKit
 
-func getProjectNames() -> [String] { // https://stackoverflow.com/questions/42894421/listing-only-the-subfolders-within-a-folder-swift-3-0-ios-10
+func getProjectName() -> [String] { // https://stackoverflow.com/questions/42894421/listing-only-the-subfolders-within-a-folder-swift-3-0-ios-10
     let filemgr = FileManager.default
     let dirPaths = filemgr.urls(for: .documentDirectory, in: .userDomainMask)
     let myDocumentsDirectory = dirPaths[0]
     var projectNames:[String] = []
-    
     do {
         let directoryContents = try FileManager.default.contentsOfDirectory(at: myDocumentsDirectory, includingPropertiesForKeys: nil, options: [])
         let subdirPaths = directoryContents.filter{ $0.hasDirectoryPath }
@@ -21,7 +21,6 @@ func getProjectNames() -> [String] { // https://stackoverflow.com/questions/4289
 
 func browseSandboxDirectory() -> Int {
     let fileManager = FileManager.default
-    
     // 获取应用程序沙盒的根目录路径
     if let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first {
         do {
@@ -42,10 +41,15 @@ func browseSandboxDirectory() -> Int {
     return 0
 }
 
-struct ProjectMenu: View {
-    var projectNames = getProjectNames()
+struct ProjectView: View {
+    @State var isBottomMenuPopup: Bool = false
+    
+    var projectNames = getProjectName()
     let i = browseSandboxDirectory()
+    
+    let img = UIImage()
     private let dirPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+    
     var body: some View {
         ScrollView {
             VStack {

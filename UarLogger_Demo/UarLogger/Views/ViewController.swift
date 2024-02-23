@@ -103,8 +103,8 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         button.layer.cornerRadius = 10
         button.backgroundColor = .white
         button.setTitleColor(.black, for: .normal)
-        button.setTitle("menu", for: .normal)
-        button.addTarget(self, action: #selector(ViewController.pushProjectMenu), for: .touchUpInside)
+        button.setTitle("Files", for: .normal)
+        button.addTarget(self, action: #selector(ViewController.projectMenu), for: .touchUpInside)
         return button
     }()
     private let deleteAllDataButton: UIButton = {
@@ -230,7 +230,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         
         let serialQueue = DispatchQueue(label: "serialQueue")
         self.view.addSubview(recordingButton)
-//        self.view.addSubview(projectButton)
+        self.view.addSubview(projectButton)
         self.view.addSubview(deleteAllDataButton)
         self.view.addSubview(clearARObjButton)
 //        self.view.addSubview(featurePointNumDetectButton)
@@ -256,9 +256,10 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
                                        y: UIScreen.main.bounds.size.height*3/4,
                                        width: 80, height: 80)
         recordingButton.addSinkAnimation()
-//        projectButton.frame = CGRect(x: UIScreen.main.bounds.size.width*3/4 - 50,
-//                                     y: UIScreen.main.bounds.size.height*3/4 + 50,
-//                                     width: 100, height: 50)
+        projectButton.frame = CGRect(x: 280,
+                                     y: UIScreen.main.bounds.size.height*3/4,
+                                     width: 80, height: 40)
+        projectButton.addSinkAnimation()
         deleteAllDataButton.frame = CGRect(x: 30,
                                            y: 80,
                                            width: 150,
@@ -746,7 +747,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     //load object model
     func loadModel() -> SCNNode {
         let sphere = SCNSphere(radius: 0.1)
-        sphere.firstMaterial?.diffuse.contents = "worldmap.jpg"
+        sphere.firstMaterial?.diffuse.contents = "Resources/worldmap.jpg"
         let node = SCNNode(geometry: sphere)
         return node
     }
@@ -775,6 +776,13 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         let camVec = alignDistanceWithNI(distance: distance, direction: direction)
         StoredData.peerPosInNI = camVec.normalize()
         StoredData.distance = distance
+    }
+    @IBAction func projMenu(_ sender: Any) {
+        let swiftUIView = ProjectView()
+        let hostingController = UIHostingController(rootView: swiftUIView)
+        DispatchQueue.main.async {
+            self.present(hostingController, animated: true, completion: nil)
+        }
     }
     
     //use button to reset tracking
@@ -838,12 +846,16 @@ extension ViewController {
         }
     }
     
-    @objc func pushProjectMenu() {
-        let swiftUIView = ProjectMenu() // 替换成您的 SwiftUI 视图名称
-        let hostingController = UIHostingController(rootView: swiftUIView)
-        DispatchQueue.main.async {
-            self.present(hostingController, animated: true, completion: nil)
-        }
+    @objc func projectMenu() {
+//        let swiftUIView = ProjectView()
+//        let hostingController = UIHostingController(rootView: swiftUIView)
+//        DispatchQueue.main.async {
+//            self.present(hostingController, animated: true, completion: nil)
+//        }
+        let dirPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let path = dirPath.absoluteString.replacingOccurrences(of: "file://", with: "shareddocuments://")
+        let url = URL(string: path)!
+        UIApplication.shared.open(url)
     }
     
     @objc func clearTempFolder() {

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		531A23022A496D6D0093516E /* flashlight.png in Resources */ = {isa = PBXBuildFile; fileRef = 531A23012A496D6D0093516E /* flashlight.png */; };
+		531D89452B8880DA00EEAD4E /* file.png in Resources */ = {isa = PBXBuildFile; fileRef = 531D89442B8880DA00EEAD4E /* file.png */; };
 		531F8C732A396ADD00BD859A /* PoseFunc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 531F8C722A396ADD00BD859A /* PoseFunc.swift */; };
 		534673CA2A38393B00FA4EC5 /* LightSensor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534673C92A38393B00FA4EC5 /* LightSensor.swift */; };
 		534673CC2A383B4100FA4EC5 /* EnvCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 534673CB2A383B4100FA4EC5 /* EnvCollector.swift */; };
@@ -56,6 +57,7 @@
 
 /* Begin PBXFileReference section */
 		531A23012A496D6D0093516E /* flashlight.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flashlight.png; sourceTree = "<group>"; };
+		531D89442B8880DA00EEAD4E /* file.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = file.png; sourceTree = "<group>"; };
 		531F8C722A396ADD00BD859A /* PoseFunc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PoseFunc.swift; sourceTree = "<group>"; };
 		534673C92A38393B00FA4EC5 /* LightSensor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightSensor.swift; sourceTree = "<group>"; };
 		534673CB2A383B4100FA4EC5 /* EnvCollector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvCollector.swift; sourceTree = "<group>"; };
@@ -117,7 +119,9 @@
 		531A23032A496D750093516E /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				5397554329DAC37700C00BE8 /* worldmap.jpg */,
 				531A23012A496D6D0093516E /* flashlight.png */,
+				531D89442B8880DA00EEAD4E /* file.png */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -183,7 +187,6 @@
 				5397550A29DAC29800C00BE8 /* Main.storyboard */,
 				5397550D29DAC29900C00BE8 /* Assets.xcassets */,
 				5397550F29DAC29900C00BE8 /* LaunchScreen.storyboard */,
-				5397554329DAC37700C00BE8 /* worldmap.jpg */,
 				5397551229DAC29900C00BE8 /* Info.plist */,
 			);
 			path = UarLogger;
@@ -361,6 +364,7 @@
 				531A23022A496D6D0093516E /* flashlight.png in Resources */,
 				5397550E29DAC29900C00BE8 /* Assets.xcassets in Resources */,
 				5397550C29DAC29800C00BE8 /* Main.storyboard in Resources */,
+				531D89452B8880DA00EEAD4E /* file.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
