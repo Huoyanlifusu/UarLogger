@@ -54,9 +54,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     private var isRecording = false
     private var isPanelShowing = false
     private var isFirstFrame = false
-    private var isDectecingFp = true
     private var detectTimeInterval = 0
-    private var fpNumSum = 0
     
     // ARKit & mathematical variables
     var camera: ARCamera?
@@ -155,16 +153,6 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         label.layer.cornerRadius = 10
         return label
     }()
-    private let featurePointNumDetectButton: UIButton = {
-        let button = UIButton()
-        button.frame = CGRect(x: 0, y: 0, width: 40, height: 40)
-        button.backgroundColor = .white
-        button.setTitle("Fp", for: .normal)
-        button.setTitleColor(.black, for: .normal)
-        button.layer.cornerRadius = 10
-        button.addTarget(self, action: #selector(ViewController.detectFeaturePointNumber), for: .touchUpInside)
-        return button
-    }()
     
     private var circleLayer: CALayer?
     
@@ -233,7 +221,6 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         self.view.addSubview(projectButton)
         self.view.addSubview(deleteAllDataButton)
         self.view.addSubview(clearARObjButton)
-//        self.view.addSubview(featurePointNumDetectButton)
 //        self.view.addSubview(lightSensorSwitch)
 //        self.view.addSubview(featurePointLabel)
 //        self.view.addSubview(lightSensorLabel)
@@ -282,10 +269,6 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
                                          y: 160,
                                          width: 250,
                                          height: 40)
-        featurePointNumDetectButton.frame = CGRect(x: UIScreen.main.bounds.size.width/2-140,
-                                                   y: UIScreen.main.bounds.size.height*3/4+40,
-                                                   width: 40,
-                                                   height: 40)
         panelButton.addSinkAnimation()
         panelView.layer.cornerRadius = 30
     }
@@ -310,7 +293,6 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         if mpc != nil && connectedPeer != nil {
             startupNI()
         }
-        ScanConfig.fileURL = getRecordingDirectory()
     }
     
     func startupMPC() {
@@ -491,12 +473,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     // Main update in the
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         featureSensor!.featureCounter(frame, frame.timestamp)
-        camera = frame.camera
         
-        if isDectecingFp {
-            fpNumSum += featureSensor?.featureCounter(frame) ?? 0
-            detectTimeInterval += 1
-        }
         if isRecording {
             if !isFirstFrame {
                 isFirstFrame = true
@@ -517,12 +494,6 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         for anchor in anchors {
             if let participantAnchor = anchor as? ARParticipantAnchor {
                 
-                if isDectecingFp {
-                    isDectecingFp = false
-                    featurePointLabel.text = "共计\(fpNumSum)，时长\(detectTimeInterval)"
-                    fpNumSum = 0
-                    detectTimeInterval = 0
-                }
                 //messageLabel.displayMessage("Established joint experience with a peer.")
                 peerWorldTransFromARKit = participantAnchor.transform
                 guard let camT = camera?.transform else {
@@ -834,6 +805,7 @@ extension ViewController {
     @objc func hitRecordingButton() {
         isRecording.toggle()
         if isRecording {
+            ScanConfig.fileURL = getRecordingDirectory()
             ScanConfig.isRecording = true
             circleLayer?.backgroundColor = UIColor.red.cgColor
             Logger.shared.debugPrint("开始采集")
@@ -872,13 +844,6 @@ extension ViewController {
             } catch let error {
                 print("Error: \(error.localizedDescription)")
             }
-        }
-    }
-    
-    @objc func detectFeaturePointNumber() {
-        let queue = DispatchQueue(label: "record")
-        queue.async { [self] in
-            isDectecingFp = false
         }
     }
     
