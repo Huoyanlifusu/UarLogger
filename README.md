@@ -18,8 +18,10 @@
 * __python__: backend analysis and kalman filter script
 
 ## Version
-* 0.1
+* 0.0.1
     * Initial Release
+* 0.0.2
+    * Added File System
 
 ## Tutorial & Remarks
 
@@ -30,13 +32,22 @@
 ![image](./pics/signing.jpg)
 
 ### Data Extration from iOS Devices to Mac or Other PCs
-* Step 1: connect iOS device and PC by data cable
-* Step 2: open __Window__ - __Device and Simulators__ menu
+* Step 1: Connect iOS device and PC by data cable
+* Step 2: Open __Window__ - __Device and Simulators__ menu
 * Step 3: Find your connected devices, in the __INSTALLED APPS__ section, select __UarLogger demo__
 * Step 4: Choose __Download Container__ option below and find the directory to save.
 * Step 5: There might be a lot of complicate data folders using dynamic sandbox storage, the folder's name is begin with starting time of recording, such as "2024-02-22T13-33-53xxx".
 
 ![image](./pics/tutorial_downloadfile.jpg)
+
+### Visualization Menu & File System
+* __Delete Data Button__:
+* __Clear Button__:
+* __Files Button__:
+* __Rounded Recording Button__:
+* __Flashlight Icon__:
+* __Environmental Panel__:
+* __Files Recorded in the Application__:
  
 ## Citations
 Inspired by
