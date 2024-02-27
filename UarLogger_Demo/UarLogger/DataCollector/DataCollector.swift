@@ -6,7 +6,7 @@ class DataCollector: NSObject {
     
     var logFile: URL? {
         guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return nil }
-        let fileName = "ar_data2.csv"
+        let fileName = "ar_data.csv"
         return documentsDirectory.appendingPathComponent(fileName)
     }
     

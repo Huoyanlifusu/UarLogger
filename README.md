@@ -41,13 +41,17 @@
 ![image](./pics/tutorial_downloadfile.jpg)
 
 ### Visualization Menu & File System
-* __Delete Data Button__:
-* __Clear Button__:
-* __Files Button__:
-* __Rounded Recording Button__:
-* __Flashlight Icon__:
-* __Environmental Panel__:
-* __Files Recorded in the Application__:
+* __Delete Data Button__: Delete all recording files.
+* __Clear Button__: Clear AR objects that user created.
+* __Files Button__: Show files recorded in the iOS device.
+* __Rounded Recording Button__: Start / End recording
+* __Flashlight Icon__: Open / Close flashlight
+* __Environmental Panel__: Environmental conditions demonstration panel
+* __Files Recorded in the Application__: 
+    * __ar_data.csv__ file: UWB & VIO localization data
+    * __.txt__ file: IMU data
+
+![image](./pics/app_demo.jpg)
  
 ## Citations
 Inspired by
