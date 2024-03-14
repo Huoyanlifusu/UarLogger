@@ -49,7 +49,7 @@
 * __Environmental Panel__: Environmental conditions demonstration panel
 * __Files Recorded in the Application__: 
     * __ar_data.csv__ file: UWB & VIO localization data
-    * __.txt__ file: IMU data
+    * __.txt__ file: IMU data, not used yet at backend
 
 ![image](./pics/app_demo.jpg)
  
