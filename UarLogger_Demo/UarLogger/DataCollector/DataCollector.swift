@@ -80,7 +80,7 @@ class DataCollector: NSObject {
                    _ lightColorStr: String,
                    _ featurePointNUmStr: String) {
         guard let url = ScanConfig.fileURL else {
-            Logger.shared.debugPrint("未找到本地文件")
+            Logger.shared.debugPrint("File not found.")
             return
         }
         let csvURL = url.appendingPathComponent("AR_NI_DATA.csv")
@@ -109,7 +109,7 @@ class DataCollector: NSObject {
             do {
                 try csvText.write(to: csvURL, atomically: true, encoding: String.Encoding.utf8)
             } catch {
-                Logger.shared.debugPrint("创建位姿文件失败")
+                Logger.shared.debugPrint("Failed to create pose file.")
                 print("\(error)")
             }
         }

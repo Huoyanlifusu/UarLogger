@@ -28,15 +28,15 @@ func browseSandboxDirectory() -> Int {
             let directoryContents = try fileManager.contentsOfDirectory(atPath: documentsDirectory.path)
             
             // 输出文件夹内容
-            print("动态沙盒文件夹内容：")
+            print("Files in the sandbox directory：")
             for item in directoryContents {
                 print(item)
             }
         } catch {
-            print("无法获取文件夹内容：\(error)")
+            print("Failed to catch files：\(error)")
         }
     } else {
-        print("无法获取动态沙盒文件夹路径")
+        print("Failed to reach sandbox directory path")
     }
     return 0
 }

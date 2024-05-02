@@ -169,7 +169,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         super.viewDidAppear(animated)
         //make sure support arworldtracking
         guard ARWorldTrackingConfiguration.isSupported else {
-            Logger.shared.debugPrint("错误001: 该设备不支持AR感知世界功能")
+            Logger.shared.debugPrint("Error 1: This device doesn't support AR world tracking function")
             fatalError("do not support ar world tracking")
         }
         
@@ -190,14 +190,14 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         
         if ARWorldTrackingConfiguration.supportsFrameSemantics([.sceneDepth, .smoothedSceneDepth]) {
             ScanConfig.supportLidar = true
-            Logger.shared.debugPrint("该设备携带Lidar传感器")
+            Logger.shared.debugPrint("This device supports Lidar.")
         }
         else {
-            Logger.shared.debugPrint("该设备未携带Lidar传感器")
+            Logger.shared.debugPrint("This device doesn't support Lidar.")
         }
         
         sceneView.session.run(configuration)
-        Logger.shared.debugPrint("开始AR会话")
+        Logger.shared.debugPrint("AR session started.")
         
         //show feature points in ar experience, usually not used
         //sceneView.debugOptions = ARSCNDebugOptions.showFeaturePoints
@@ -356,7 +356,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         connectedPeer = peer
         peerDisplayName = peer.displayName
         DispatchQueue.main.async {
-            self.deviceLable.text = "链接对象:" + peer.displayName
+            self.deviceLable.text = "Peer's Name:" + peer.displayName
         }
     }
     
@@ -722,20 +722,6 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         let node = SCNNode(geometry: sphere)
         return node
     }
-
-//    A function save ARKit captured image as .png formulation
-//    func saveImg(img: CVPixelBuffer, count: Int) {
-//        let ciImg = CIImage(cvPixelBuffer: img)
-//        let uiImg = UIImage(ciImage: ciImg)
-//        if let data = uiImg.pngData() {
-//            guard let url = ScanConfig.fileURL else {
-//                Logger.shared.debugPrint("索取图像存储地址失败")
-//                return
-//            }
-//            let fileurl = url.appendingPathComponent("background_" + String(count) + ".png")
-//            try? data.write(to: fileurl)
-//        }
-//    }
     
     //update visualization information
     func visualisationUpdate(with peer: NINearbyObject) {
@@ -808,11 +794,11 @@ extension ViewController {
             ScanConfig.fileURL = getRecordingDirectory()
             ScanConfig.isRecording = true
             circleLayer?.backgroundColor = UIColor.red.cgColor
-            Logger.shared.debugPrint("开始采集")
+            Logger.shared.debugPrint("Start Recording.")
             cmManager.startRecording()
         } else {
             ScanConfig.isRecording = false
-            Logger.shared.debugPrint("结束采集")
+            Logger.shared.debugPrint("End Recording.")
             circleLayer?.backgroundColor = UIColor.green.cgColor
             cmManager.endRecording()
         }
