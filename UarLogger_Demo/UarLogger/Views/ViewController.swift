@@ -179,6 +179,8 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         //set delegate
         sceneView.session.delegate = self
         sceneView.automaticallyUpdatesLighting = false
+        sceneView.autoenablesDefaultLighting = true
+//        sceneView.allowsCameraControl = true
         //start ar session
         
         let configuration = ARWorldTrackingConfiguration()
@@ -717,10 +719,15 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     
     //load object model
     func loadModel() -> SCNNode {
-        let sphere = SCNSphere(radius: 0.1)
-        sphere.firstMaterial?.diffuse.contents = "Resources/worldmap.jpg"
-        let node = SCNNode(geometry: sphere)
-        return node
+        
+        let usdzURL = Bundle.main.url(forResource: "toy_drummer_idle", withExtension: "usdz")
+        let scene = try! SCNScene(url: usdzURL!, options: [.checkConsistency: true])
+        scene.rootNode.scale = SCNVector3(x: 0.05, y: 0.05, z: 0.05)
+        return scene.rootNode
+//        let sphere = SCNSphere(radius: 0.1)
+//        sphere.firstMaterial?.diffuse.contents = "Resources/worldmap.jpg"
+//        let node = SCNNode(geometry: sphere)
+//        return node
     }
     
     //update visualization information
