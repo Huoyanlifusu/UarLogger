@@ -12,6 +12,8 @@ import NearbyInteraction
 import MultipeerConnectivity
 import RealityKit
 import SwiftUI
+import SceneKit
+import SceneKit.ModelIO
 
 @available(iOS 16.0, *)
 class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, ARSCNViewDelegate {
@@ -719,11 +721,23 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     
     //load object model
     func loadModel() -> SCNNode {
+        guard let usdzURL = Bundle.main.url(forResource: "NTU_Buildings_Map", withExtension: "usdz") else {
+            return SCNNode(geometry: SCNSphere(radius: 0.1))
+        }
+        let mdlAsset = MDLAsset(url: usdzURL)
+        mdlAsset.loadTextures()
         
-        let usdzURL = Bundle.main.url(forResource: "toy_drummer_idle", withExtension: "usdz")
-        let scene = try! SCNScene(url: usdzURL!, options: [.checkConsistency: true])
-        scene.rootNode.scale = SCNVector3(x: 0.05, y: 0.05, z: 0.05)
-        return scene.rootNode
+        let asset = mdlAsset.object(at: 0) // extract first object
+        let assetNode = SCNNode(mdlObject: asset)
+        
+        assetNode.rotation = SCNVector4Make(0, 1, 0, .pi / 2)
+        
+//      move the ar object with camera
+//        let billboardConstraint = SCNBillboardConstraint()
+//        billboardConstraint.freeAxes = [.X, .Y, .Z]
+//        assetNode.constraints = [billboardConstraint]
+        
+        return assetNode
 //        let sphere = SCNSphere(radius: 0.1)
 //        sphere.firstMaterial?.diffuse.contents = "Resources/worldmap.jpg"
 //        let node = SCNNode(geometry: sphere)
