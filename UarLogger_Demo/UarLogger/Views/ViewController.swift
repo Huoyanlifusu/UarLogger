@@ -185,6 +185,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
 //        sceneView.allowsCameraControl = true
         //start ar session
         
+        // 设置AR世界跟踪方式
         let configuration = ARWorldTrackingConfiguration()
         configuration.worldAlignment = .gravity
         configuration.isCollaborationEnabled = true
@@ -199,19 +200,23 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         else {
             Logger.shared.debugPrint("This device doesn't support Lidar.")
         }
-        
+        // 启动AR会话
         sceneView.session.run(configuration)
+        
         Logger.shared.debugPrint("AR session started.")
         
         //show feature points in ar experience, usually not used
         //sceneView.debugOptions = ARSCNDebugOptions.showFeaturePoints
         
+        // 自动辅助界面
         setupCoachingOverlay()
         
         
         //disable idletimer cause user may not touch screen for a long time
+        // 防止熄屏
         UIApplication.shared.isIdleTimerDisabled = true
         
+        // AR会话ID发送给同伴
         sessionIDObservation = observe(\.sceneView.session.identifier, options: [.new]) { object, change in
             print("SessionID changed to: \(change.newValue!)")
             // Tell all other peers about your ARSession's changed ID, so
@@ -221,6 +226,8 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         }
         
         let serialQueue = DispatchQueue(label: "serialQueue")
+        
+        // UI
         self.view.addSubview(recordingButton)
         self.view.addSubview(projectButton)
         self.view.addSubview(deleteAllDataButton)
@@ -230,8 +237,12 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
 //        self.view.addSubview(lightSensorLabel)
         
         circleLayer = recordingButton.layer.sublayers?.first(where: { $0 is CALayer }) as? CALayer
+        
+        // IMU 采集
         cmManager = CMManager(viewController: self)
         cmManager.startJudgingMotionState()
+        
+        // 进入 frame didupdate 主循环
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -382,6 +393,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     }
     
     //put new anchor into node
+    // 一旦点击 渲染方法
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
         if let name = anchor.name, name.hasPrefix(Constants.ObjectName) {
             node.addChildNode(loadModel())
@@ -400,6 +412,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         
     }
     
+    // worldmap的生成和发送
     func session(_ session: ARSession, didOutputCollaborationData data: ARSession.CollaborationData) {
         guard let multipeerSession = mpc else { return }
         if !multipeerSession.connectedPeers.isEmpty {
@@ -419,6 +432,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     }
     
     //NISessionDelegate Monitoring NearbyObjects
+    // NI主循环
     func session(_ session: NISession, didUpdate nearbyObjects: [NINearbyObject]) {
         DispatchQueue(label: "serialQueue").async {
             if self.couldDetect == true {
@@ -438,7 +452,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         //当处理数据时停止实时测量
     }
     
-    
+    // 处理NI链接中断的逻辑
     func session(_ session: NISession, didRemove nearbyObjects: [NINearbyObject], reason: NINearbyObject.RemovalReason) {
         guard let peerToken = peerDiscoveryToken else {
             fatalError("don't have peer token")
@@ -475,14 +489,18 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     }
     
     // Main update in the
+    // AR主循环
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
+        // 特征检测
         featureSensor!.featureCounter(frame, frame.timestamp)
         
         if isRecording {
+            // 获取初始帧
             if !isFirstFrame {
                 isFirstFrame = true
                 timeStampAlignment.AR_First_Stamp = frame.timestamp
             }
+            // 数据采集
             guard let arkitData = StoredData.peerPosInARKit,
                   let niData = StoredData.peerPosInNI,
                   let distance = StoredData.distance,
@@ -494,6 +512,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     }
     
     // ARSessionDelegate Monitoring NearbyObjects
+    // 同伴当成anchor 同伴anchor生成时调用
     func session(_ session: ARSession, didAdd anchors: [ARAnchor]) {
         for anchor in anchors {
             if let participantAnchor = anchor as? ARParticipantAnchor {
@@ -510,7 +529,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         }
     }
     
-    
+    // 同伴当成anchor 同伴anchor更新时调用
     func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
         for anchor in anchors {
             if let participantAnchor = anchor as? ARParticipantAnchor {
@@ -528,13 +547,19 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     // handler to connect
     var mapProvider: MCPeerID?
     // handler to data receive
+    
+    // 接受数据的方法
     func dataReceiveHandler(data: Data, peer: MCPeerID) {
+        // worldmap
         if let collaborationData = try? NSKeyedUnarchiver.unarchivedObject(ofClass: ARSession.CollaborationData.self, from: data) {
             sceneView.session.update(with: collaborationData)
         }
+        // NI会话的钥匙
         if let discoverytoken = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NIDiscoveryToken.self, from: data) {
+            // 建立NI链接
             peerDidShareDiscoveryToken(peer: peer, token: discoverytoken)
         }
+        // peer的AR物体转换到我的坐标系下
         if let pos = try? JSONDecoder().decode(simd_float4.self, from: data) {
             guard let camTrans = camera?.transform else { print("no cam")
                 return }
@@ -573,20 +598,24 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
                 }
             }
         }
+        // 收到了peer创建的ARanchor
         if let anchor = try? NSKeyedUnarchiver.unarchivedObject(ofClass: ARAnchor.self, from: data) {
             anchorFromPeer = anchor
         }
+        // 暂时没用
         if let eulerangle = try? JSONDecoder().decode(simd_float3.self, from: data) {
             peerEulerangle = eulerangle
             //resetWorldOrigin(with: eularangle, and: peerEulerangle)
         }
     }
     
+    // 重建世界坐标系
     func resetWorldOrigin(with myEuler: simd_float3, and peerEuler: simd_float3) {
         let newWorldTransform = correctPose(with: peerEuler, using: myEuler)
         sceneView.session.setWorldOrigin(relativeTransform: newWorldTransform)
     }
     
+    // 手动添加anchor的函数
     func addAnchor(anchor: ARAnchor) {
         sceneView.session.add(anchor: anchor)
     }
@@ -616,6 +645,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
     }
     
     //Hit test function
+    // 点击逻辑
     @IBAction func handleTap(_ sender: UITapGestureRecognizer) {
         if sender.state == .ended {
             let location = sender.location(in: sceneView)
@@ -630,14 +660,17 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
             else {
                 return
             }
-            
+            // 点机位置放置AR锚点
             let anchor = ARAnchor(name: Constants.ObjectName, transform: result.worldTransform)
             sceneView.session.add(anchor: anchor)
+            
+            // AR物体加密 传输
             guard let anchorData = try? NSKeyedArchiver.archivedData(withRootObject: anchor, requiringSecureCoding: true)
             else { fatalError("can't encode anchor") }
             //send anchor data
             self.mpc?.sendDataToAllPeers(data: anchorData)
             
+            // 暂时没用
             guard let cam = camera else { return }
             guard let eulerData = try? JSONEncoder().encode(cam.eulerAngles) else { fatalError("dont have your cam") }
             self.mpc?.sendDataToAllPeers(data: eulerData)
@@ -648,7 +681,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         }
     }
     
-    
+    // 手电调用
     @IBAction func flashlight(_ sender: Any) {
         guard let device = AVCaptureDevice.default(for: .video), device.hasTorch else {
                 let alertController = UIAlertController(title: "Flashlight not supported", message: nil, preferredStyle: .alert)
@@ -670,7 +703,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
             }
     }
     
-    
+    // 环境面板弹出
     @IBAction func popupPanel(_ sender: Any) {
         if isPanelShowing {
             UIView.animate(withDuration: 0.5, delay: 0.0, options: .curveEaseIn, animations: {
@@ -801,6 +834,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
 }
 
 extension ViewController {
+    // 采集按钮触发
     @objc func hitRecordingButton() {
         isRecording.toggle()
         if isRecording {
@@ -817,6 +851,7 @@ extension ViewController {
         }
     }
     
+    // files列表读取
     @objc func projectMenu() {
 //        let swiftUIView = ProjectView()
 //        let hostingController = UIHostingController(rootView: swiftUIView)
@@ -829,6 +864,7 @@ extension ViewController {
         UIApplication.shared.open(url)
     }
     
+    // 清除所有采集文件
     @objc func clearTempFolder() {
         let queue = DispatchQueue(label: "delete")
         queue.async {
@@ -845,6 +881,7 @@ extension ViewController {
             }
         }
     }
+    
     
     func updateCMFirstStamp(_ timeStamp: TimeInterval) {
         timeStampAlignment.CM_First_Stamp = timeStamp
