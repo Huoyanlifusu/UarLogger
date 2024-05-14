@@ -391,7 +391,7 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
             DispatchQueue.main.async {
                 print("did add participant")
             }
-            node.addChildNode(loadModel())
+//            node.addChildNode(loadModel())
             return
         }
     }
@@ -726,22 +726,14 @@ class ViewController: UIViewController, NISessionDelegate, ARSessionDelegate, AR
         }
         let mdlAsset = MDLAsset(url: usdzURL)
         mdlAsset.loadTextures()
-        
         let asset = mdlAsset.object(at: 0) // extract first object
         let assetNode = SCNNode(mdlObject: asset)
         
         assetNode.rotation = SCNVector4Make(0, 1, 0, .pi / 2)
         
-//      move the ar object with camera
-//        let billboardConstraint = SCNBillboardConstraint()
-//        billboardConstraint.freeAxes = [.X, .Y, .Z]
-//        assetNode.constraints = [billboardConstraint]
+        assetNode.simdScale = simd_float3(0.05, 0.05, 0.05)
         
         return assetNode
-//        let sphere = SCNSphere(radius: 0.1)
-//        sphere.firstMaterial?.diffuse.contents = "Resources/worldmap.jpg"
-//        let node = SCNNode(geometry: sphere)
-//        return node
     }
     
     //update visualization information
