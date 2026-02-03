@@ -1,4 +1,6 @@
 # UarLogger: 
+ IPSN 2024 Best Poster Runner-up
+ https://ieeexplore.ieee.org/document/10577336
  
 ## Overview
 
